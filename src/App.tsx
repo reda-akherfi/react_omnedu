@@ -660,19 +660,21 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-auto">
           {activeSidebarItem === 'main' && (
             <div className="p-6">
-              {/* Projects Component */}
-              <Projects
-                projects={projects}
-                onCreateProject={createProject}
-                onUpdateProject={updateProject}
-                onDeleteProject={deleteProject}
-                selectedProjectId={selectedProjectId}
-                onSelectProject={selectProject}
-                darkMode={darkMode}
-              />
+              {/* Main Content Row - Projects, Tasks, Timer */}
+              <div className="grid grid-cols-3 gap-6">
+                {/* Projects Component */}
+                <div>
+                  <Projects
+                    projects={projects}
+                    onCreateProject={createProject}
+                    onUpdateProject={updateProject}
+                    onDeleteProject={deleteProject}
+                    selectedProjectId={selectedProjectId}
+                    onSelectProject={selectProject}
+                    darkMode={darkMode}
+                  />
+                </div>
 
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Tasks Component */}
                 <div>
                   <Tasks
