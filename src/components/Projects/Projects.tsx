@@ -187,23 +187,6 @@ const Projects: React.FC<ProjectsProps> = ({
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      name="selectedProject"
-                      checked={selectedProjectId === project.id}
-                      onChange={() => onSelectProject(project.id)}
-                      onClick={(e) => e.stopPropagation()} // Prevent double-triggering
-                      className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500"
-                    />
-                    <input
-                      type="checkbox"
-                      checked={project.completed}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        onUpdateProject(project.id, { completed: !project.completed, updatedAt: new Date() });
-                      }}
-                      className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
-                    />
                     <span className={`font-medium ${project.completed ? 'line-through text-gray-400' : ''}`}>{project.name}</span>
                     {project.completed && <span className="ml-2 text-xs text-green-600 font-semibold">Completed</span>}
                   </div>

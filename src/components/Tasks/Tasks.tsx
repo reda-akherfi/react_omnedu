@@ -249,13 +249,6 @@ const Tasks: React.FC<TasksProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
                     <input
-                      type="radio"
-                      name="selectedTask"
-                      checked={selectedTaskId === task.id}
-                      onChange={() => {}} // Radio button is now controlled by parent div click
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                    />
-                    <input
                       type="checkbox"
                       checked={task.completed}
                       onChange={(e) => {
