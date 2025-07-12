@@ -87,27 +87,23 @@ const App: React.FC = () => {
   // Timer session completion handler
   const handleTimerSessionComplete = (sessionId: number, taskId: number | null) => {
     if (taskId) {
-      // Update task's timer IDs
+      // Update task's timer IDs (only if not already present)
       setTasks(prev => prev.map(task => 
-        task.id === taskId 
+        task.id === taskId && !task.timerIds.includes(sessionId)
           ? { 
               ...task, 
-              timerIds: task.timerIds.includes(sessionId) 
-                ? task.timerIds 
-                : [...task.timerIds, sessionId],
+              timerIds: [...task.timerIds, sessionId],
               updatedAt: new Date()
             }
           : task
       ));
-
-      // Update relationship tracking
+  
+      // Update relationship tracking (only if not already counted)
       setTaskTimerRelationships(prev => prev.map(rel => 
-        rel.taskId === taskId
+        rel.taskId === taskId && !rel.timerIds.includes(sessionId)
           ? {
               ...rel,
-              timerIds: rel.timerIds.includes(sessionId) 
-                ? rel.timerIds 
-                : [...rel.timerIds, sessionId],
+              timerIds: [...rel.timerIds, sessionId],
               totalSessions: rel.totalSessions + 1,
               completedSessions: rel.completedSessions + 1,
               lastSessionDate: new Date()

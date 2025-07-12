@@ -65,15 +65,21 @@ const Timer: React.FC<TimerProps> = ({
   
   const addUniqueSessionToHistory = (session: TimerSession) => {
     setTimerHistory(prev => {
-      const alreadyExists = prev.some(s => s.id === session.id);
-      if (!alreadyExists) {
-        // Notify parent component about the completed session
+      // Check if session with this ID already exists
+      const existingIndex = prev.findIndex(s => s.id === session.id);
+      
+      if (existingIndex >= 0) {
+        // Update existing session if needed
+        return prev.map((s, idx) => 
+          idx === existingIndex ? session : s
+        );
+      } else {
+        // Add new session
         if (session.completed) {
           onTimerSessionComplete(session.id, session.taskId);
         }
         return [...prev, session];
       }
-      return prev;
     });
   };
 
