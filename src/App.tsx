@@ -60,7 +60,7 @@ interface TimerSettings {
 
 const App: React.FC = () => {
   // Dark mode state
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(true);
   
   // Sidebar navigation state
   const [activeSidebarItem, setActiveSidebarItem] = useState<'main' | 'statistics'>('main');
