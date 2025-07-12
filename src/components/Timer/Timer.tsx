@@ -1,17 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const Timer = () => {
-  const [mode, setMode] = useState('pomodoro');
-  const [isRunning, setIsRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
-  const [currentTime, setCurrentTime] = useState(0); // For stopwatch mode
-  const [pomodoroPhase, setPomodoroPhase] = useState('work'); // work, shortBreak, longBreak
-  const [pomodoroCount, setPomodoroCount] = useState(0);
-  const [customCountdown, setCustomCountdown] = useState(10 * 60); // 10 minutes default
-  const [showSettings, setShowSettings] = useState(false);
+// Type definitions
+interface TimerSession {
+  id: number;
+  mode: 'pomodoro' | 'countdown' | 'stopwatch';
+  phase: 'work' | 'shortBreak' | 'longBreak' | null;
+  startTime: Date;
+  plannedDuration: number | null;
+  completed: boolean;
+  endTime?: Date;
+  actualDuration?: number;
+  reason?: string;
+}
+
+interface TimerSettings {
+  workDuration: number;
+  shortBreakDuration: number;
+  longBreakDuration: number;
+  longBreakInterval: number;
+  autoStartWork: boolean;
+  autoStartBreaks: boolean;
+}
+
+const Timer: React.FC = () => {
+  const [mode, setMode] = useState<'pomodoro' | 'countdown' | 'stopwatch'>('pomodoro');
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [timeLeft, setTimeLeft] = useState<number>(25 * 60); // 25 minutes in seconds
+  const [currentTime, setCurrentTime] = useState<number>(0); // For stopwatch mode
+  const [pomodoroPhase, setPomodoroPhase] = useState<'work' | 'shortBreak' | 'longBreak'>('work');
+  const [pomodoroCount, setPomodoroCount] = useState<number>(0);
+  const [customCountdown, setCustomCountdown] = useState<number>(10 * 60); // 10 minutes default
+  const [showSettings, setShowSettings] = useState<boolean>(false);
   
   // Settings state
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<TimerSettings>({
     workDuration: 25,
     shortBreakDuration: 5,
     longBreakDuration: 15,
@@ -21,14 +43,14 @@ const Timer = () => {
   });
   
   // Timer tracking for statistics
-  const [timerHistory, setTimerHistory] = useState([]);
-  const [currentSession, setCurrentSession] = useState(null);
+  const [timerHistory, setTimerHistory] = useState<TimerSession[]>([]);
+  const [currentSession, setCurrentSession] = useState<TimerSession | null>(null);
   
   // State viewer for debugging
-  const [showStateViewer, setShowStateViewer] = useState(false);
+  const [showStateViewer, setShowStateViewer] = useState<boolean>(false);
   
-  const intervalRef = useRef(null);
-  const startTimeRef = useRef(null);
+  const intervalRef = useRef<number | null>(null);
+  const startTimeRef = useRef<Date | null>(null);
   
   // Initialize timer based on mode
   useEffect(() => {
@@ -51,14 +73,13 @@ const Timer = () => {
         } else {
           setTimeLeft(prev => {
             if (prev <= 1) {
-              // Timer completed naturally
               setIsRunning(false);
               
               // Complete current session
               if (currentSession) {
-                const actualDuration = mode === 'stopwatch' ? currentTime + 1 : currentSession.plannedDuration;
+                const actualDuration = ((mode as string) === 'stopwatch' ? currentTime + 1 : (currentSession.plannedDuration ?? 0));
                 
-                const completedSession = {
+                const completedSession: TimerSession = {
                   ...currentSession,
                   endTime: new Date(),
                   completed: true,
@@ -70,7 +91,7 @@ const Timer = () => {
               
               // Handle pomodoro phase transitions
               if (mode === 'pomodoro') {
-                let nextPhase;
+                let nextPhase: 'work' | 'shortBreak' | 'longBreak';
                 let shouldAutoStart = false;
                 
                 if (pomodoroPhase === 'work') {
@@ -98,7 +119,7 @@ const Timer = () => {
                   if (shouldAutoStart) {
                     setIsRunning(true);
                     startTimeRef.current = new Date();
-                    const newSession = {
+                    const newSession: TimerSession = {
                       id: Date.now(),
                       mode: 'pomodoro',
                       phase: nextPhase,
@@ -118,13 +139,15 @@ const Timer = () => {
         }
       }, 1000);
     } else {
-      clearInterval(intervalRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     }
     
-    return () => clearInterval(intervalRef.current);
-  }, [isRunning, mode, currentSession, pomodoroPhase, pomodoroCount, settings.longBreakInterval, settings.autoStartWork, settings.autoStartBreaks]);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRunning, mode, currentSession, pomodoroPhase, pomodoroCount, settings.longBreakInterval, settings.autoStartWork, settings.autoStartBreaks, currentTime]);
   
-  const getPomodoroPhaseTime = (phase) => {
+  const getPomodoroPhaseTime = (phase: 'work' | 'shortBreak' | 'longBreak'): number => {
     switch (phase) {
       case 'work': return settings.workDuration;
       case 'shortBreak': return settings.shortBreakDuration;
@@ -133,73 +156,12 @@ const Timer = () => {
     }
   };
   
-  const handleTimerComplete = () => {
-    setIsRunning(false);
-    
-    // Complete current session
-    if (currentSession) {
-      const actualDuration = mode === 'stopwatch' ? currentTime : currentSession.plannedDuration;
-      
-      const completedSession = {
-        ...currentSession,
-        endTime: new Date(),
-        completed: true,
-        actualDuration: actualDuration
-      };
-      setTimerHistory(prev => [...prev, completedSession]);
-      setCurrentSession(null);
-    }
-    
-    // Auto-advance pomodoro phases
-    if (mode === 'pomodoro') {
-      let nextPhase;
-      let shouldAutoStart = false;
-      
-      if (pomodoroPhase === 'work') {
-        const newCount = pomodoroCount + 1;
-        setPomodoroCount(newCount);
-        
-        if (newCount % settings.longBreakInterval === 0) {
-          nextPhase = 'longBreak';
-        } else {
-          nextPhase = 'shortBreak';
-        }
-        shouldAutoStart = settings.autoStartBreaks;
-      } else {
-        nextPhase = 'work';
-        shouldAutoStart = settings.autoStartWork;
-      }
-      
-      setPomodoroPhase(nextPhase);
-      
-      // Reset timer for next phase and auto-start if enabled
-      setTimeout(() => {
-        const nextPhaseDuration = getPomodoroPhaseTime(nextPhase);
-        setTimeLeft(nextPhaseDuration * 60);
-        
-        if (shouldAutoStart) {
-          setIsRunning(true);
-          startTimeRef.current = new Date();
-          const newSession = {
-            id: Date.now(),
-            mode: 'pomodoro',
-            phase: nextPhase,
-            startTime: new Date(),
-            plannedDuration: nextPhaseDuration * 60,
-            completed: false
-          };
-          setCurrentSession(newSession);
-        }
-      }, 100);
-    }
-  };
-  
   const startTimer = () => {
     setIsRunning(true);
     startTimeRef.current = new Date();
     
     // Create new session
-    const newSession = {
+    const newSession: TimerSession = {
       id: Date.now(),
       mode,
       phase: mode === 'pomodoro' ? pomodoroPhase : null,
@@ -219,10 +181,9 @@ const Timer = () => {
     
     // Mark current session based on mode
     if (currentSession) {
-      const actualDuration = mode === 'stopwatch' ? currentTime : 
-        currentSession.plannedDuration - timeLeft;
+      const actualDuration = mode === 'stopwatch' ? currentTime : (currentSession.plannedDuration ?? 0) - timeLeft;
       
-      const sessionEnd = {
+      const sessionEnd: TimerSession = {
         ...currentSession,
         endTime: new Date(),
         completed: mode === 'stopwatch' ? true : false, // Stopwatch reset = complete
@@ -243,13 +204,12 @@ const Timer = () => {
     }
   };
   
-  const handleModeChange = (newMode) => {
+  const handleModeChange = (newMode: 'pomodoro' | 'countdown' | 'stopwatch') => {
     // Complete current session when mode changes
     if (currentSession) {
-      const actualDuration = mode === 'stopwatch' ? currentTime : 
-        currentSession.plannedDuration - timeLeft;
+      const actualDuration = mode === 'stopwatch' ? currentTime : (currentSession.plannedDuration ?? 0) - timeLeft;
       
-      const completedSession = {
+      const completedSession: TimerSession = {
         ...currentSession,
         endTime: new Date(),
         completed: false,
@@ -269,28 +229,28 @@ const Timer = () => {
     }
   };
   
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  const updateSettings = (key, value) => {
+  const updateSettings = (key: keyof TimerSettings, value: string | number | boolean) => {
     if (key === 'autoStartWork' || key === 'autoStartBreaks') {
-      setSettings(prev => ({ ...prev, [key]: value }));
+      setSettings(prev => ({ ...prev, [key]: value as boolean }));
     } else {
-      setSettings(prev => ({ ...prev, [key]: parseInt(value) }));
+      setSettings(prev => ({ ...prev, [key]: parseInt(value as string) }));
     }
   };
   
-  const getDisplayTime = () => {
+  const getDisplayTime = (): string => {
     if (mode === 'stopwatch') {
       return formatTime(currentTime);
     }
     return formatTime(timeLeft);
   };
   
-  const getPhaseLabel = () => {
+  const getPhaseLabel = (): string => {
     if (mode === 'pomodoro') {
       switch (pomodoroPhase) {
         case 'work': return 'Work Time';
@@ -302,7 +262,7 @@ const Timer = () => {
     return mode.charAt(0).toUpperCase() + mode.slice(1);
   };
   
-  const getProgressPercentage = () => {
+  const getProgressPercentage = (): number => {
     if (mode === 'stopwatch') return 0;
     if (mode === 'pomodoro') {
       const totalTime = getPomodoroPhaseTime(pomodoroPhase) * 60;
@@ -319,7 +279,7 @@ const Timer = () => {
       <div className="mb-6">
         <select 
           value={mode} 
-          onChange={(e) => handleModeChange(e.target.value)}
+          onChange={(e) => handleModeChange(e.target.value as 'pomodoro' | 'countdown' | 'stopwatch')}
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="pomodoro">Pomodoro</option>
