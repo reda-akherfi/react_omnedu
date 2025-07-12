@@ -3,13 +3,23 @@ import React, { useState } from 'react';
 import './App.css'
 import Timer from './components/Timer/Timer'
 import Tasks from './components/Tasks/Tasks';
+import Projects from './components/Projects/Projects';
 
 
 
 
 // Type definitions
+interface Project {
+  id: number;
+  name: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface Task {
   id: number;
+  projectId: number; // Link to one project
   title: string;
   description: string;
   completed: boolean;
@@ -28,6 +38,10 @@ interface TaskTimerRelationship {
 }
 
 const App: React.FC = () => {
+  // Projects state
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+
   // Tasks state
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
@@ -38,8 +52,49 @@ const App: React.FC = () => {
   // State viewer for debugging
   const [showGlobalStateViewer, setShowGlobalStateViewer] = useState<boolean>(false);
 
+  // Project CRUD operations
+  const createProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newProject: Project = {
+      ...projectData,
+      id: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    setProjects(prev => [...prev, newProject]);
+    // Auto-select first project if none selected
+    if (!selectedProjectId) setSelectedProjectId(newProject.id);
+  };
+
+  const updateProject = (projectId: number, updates: Partial<Project>) => {
+    setProjects(prev => prev.map(project =>
+      project.id === projectId
+        ? { ...project, ...updates, updatedAt: new Date() }
+        : project
+    ));
+  };
+
+  const deleteProject = (projectId: number) => {
+    setProjects(prev => prev.filter(project => project.id !== projectId));
+    // Remove all tasks belonging to this project
+    setTasks(prev => prev.filter(task => task.projectId !== projectId));
+    // Deselect if needed
+    if (selectedProjectId === projectId) setSelectedProjectId(null);
+    if (selectedTaskId && tasks.find(t => t.id === selectedTaskId)?.projectId === projectId) {
+      setSelectedTaskId(null);
+    }
+  };
+
+  const selectProject = (projectId: number | null) => {
+    setSelectedProjectId(projectId);
+    // Deselect task if it doesn't belong to the new project
+    if (selectedTaskId && tasks.find(t => t.id === selectedTaskId)?.projectId !== projectId) {
+      setSelectedTaskId(null);
+    }
+  };
+
   // Task CRUD operations
   const createTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timerIds'>) => {
+    if (!taskData.projectId) return;
     const newTask: Task = {
       ...taskData,
       id: Date.now(),
@@ -47,9 +102,7 @@ const App: React.FC = () => {
       updatedAt: new Date(),
       timerIds: []
     };
-    
     setTasks(prev => [...prev, newTask]);
-    
     // Initialize relationship tracking
     setTaskTimerRelationships(prev => [...prev, {
       taskId: newTask.id,
@@ -156,17 +209,28 @@ const App: React.FC = () => {
           </div>
         </div>
 
+        {/* Projects Component (Above Main Content) */}
+        <Projects
+          projects={projects}
+          onCreateProject={createProject}
+          onUpdateProject={updateProject}
+          onDeleteProject={deleteProject}
+          selectedProjectId={selectedProjectId}
+          onSelectProject={selectProject}
+        />
+
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Tasks Component (Left) */}
           <div>
             <Tasks
-              tasks={tasks}
+              tasks={tasks.filter(task => task.projectId === selectedProjectId)}
               onCreateTask={createTask}
               onUpdateTask={updateTask}
               onDeleteTask={deleteTask}
               selectedTaskId={selectedTaskId}
               onSelectTask={selectTask}
+              currentProjectId={selectedProjectId}
             />
           </div>
 

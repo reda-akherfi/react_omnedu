@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 // Type definitions
 interface Task {
   id: number;
+  projectId: number;
   title: string;
   description: string;
   completed: boolean;
@@ -18,6 +19,7 @@ interface TasksProps {
   onDeleteTask: (id: number) => void;
   selectedTaskId: number | null;
   onSelectTask: (taskId: number | null) => void;
+  currentProjectId: number | null;
 }
 
 const Tasks: React.FC<TasksProps> = ({
@@ -26,7 +28,8 @@ const Tasks: React.FC<TasksProps> = ({
   onUpdateTask,
   onDeleteTask,
   selectedTaskId,
-  onSelectTask
+  onSelectTask,
+  currentProjectId
 }) => {
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
@@ -39,8 +42,10 @@ const Tasks: React.FC<TasksProps> = ({
   });
 
   const handleCreateTask = () => {
+    if (!currentProjectId) return;
     if (formData.title.trim()) {
       onCreateTask({
+        projectId: currentProjectId,
         title: formData.title.trim(),
         description: formData.description.trim(),
         completed: formData.completed
@@ -93,6 +98,9 @@ const Tasks: React.FC<TasksProps> = ({
     return task ? task.timerIds.length : 0;
   };
 
+  // Only show tasks for the current project
+  const filteredTasks = currentProjectId ? tasks.filter(t => t.projectId === currentProjectId) : [];
+
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
       <div className="mb-6">
@@ -112,6 +120,11 @@ const Tasks: React.FC<TasksProps> = ({
 
         {/* Create/Edit Form */}
         {(showCreateForm || editingTaskId) && (
+          !currentProjectId ? (
+            <div className="mb-4 p-4 bg-yellow-100 rounded-md text-yellow-800 text-sm">
+              You must select a project to create a task.
+            </div>
+          ) : (
           <div className="mb-4 p-4 bg-gray-50 rounded-md">
             <div className="space-y-3">
               <div>
@@ -172,6 +185,7 @@ const Tasks: React.FC<TasksProps> = ({
               </div>
             </div>
           </div>
+          )
         )}
 
         {/* Task Selection */}
@@ -185,7 +199,7 @@ const Tasks: React.FC<TasksProps> = ({
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">No task selected</option>
-            {tasks.map(task => (
+            {filteredTasks.map(task => (
               <option key={task.id} value={task.id}>
                 {task.title} {task.completed ? '(Completed)' : ''}
               </option>
@@ -196,10 +210,10 @@ const Tasks: React.FC<TasksProps> = ({
 
       {/* Tasks List */}
       <div className="space-y-3">
-        {tasks.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No tasks yet. Create your first task!</p>
+        {filteredTasks.length === 0 ? (
+          <p className="text-gray-500 text-center py-4">No tasks yet for this project. Create your first task!</p>
         ) : (
-          tasks.map(task => (
+          filteredTasks.map(task => (
             <div
               key={task.id}
               className={`p-4 border rounded-md ${
