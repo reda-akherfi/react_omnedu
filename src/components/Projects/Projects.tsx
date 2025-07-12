@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface Project {
   id: number;
@@ -33,6 +33,48 @@ const Projects: React.FC<ProjectsProps> = ({
   const [formData, setFormData] = useState({ name: '', description: '', completed: false });
   const [showStateViewer, setShowStateViewer] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+
+  // Refs for click-outside detection
+  const createEditModalRef = useRef<HTMLDivElement>(null);
+  const deleteModalRef = useRef<HTMLDivElement>(null);
+
+  // Click outside handlers
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (createEditModalRef.current && !createEditModalRef.current.contains(event.target as Node)) {
+        if (showCreateForm || editingProjectId) {
+          setShowCreateForm(false);
+          cancelEdit();
+        }
+      }
+    };
+
+    if (showCreateForm || editingProjectId) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCreateForm, editingProjectId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (deleteModalRef.current && !deleteModalRef.current.contains(event.target as Node)) {
+        if (projectToDelete) {
+          cancelDelete();
+        }
+      }
+    };
+
+    if (projectToDelete) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [projectToDelete]);
 
   const handleCreate = () => {
     if (formData.name.trim()) {
@@ -105,10 +147,13 @@ const Projects: React.FC<ProjectsProps> = ({
 
       {/* Create/Edit Modal */}
       {(showCreateForm || editingProjectId) && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 w-full transition-colors duration-200 ${
-            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-          }`}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
+          <div 
+            ref={createEditModalRef}
+            className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 w-full transition-colors duration-200 cursor-default ${
+              darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+            }`}
+          >
             <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
               {editingProjectId ? 'Edit Project' : 'New Project'}
             </h3>
@@ -286,10 +331,13 @@ const Projects: React.FC<ProjectsProps> = ({
       
       {/* Delete Confirmation Modal */}
       {projectToDelete && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 transition-colors duration-200 ${
-            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-          }`}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
+          <div 
+            ref={deleteModalRef}
+            className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 transition-colors duration-200 cursor-default ${
+              darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+            }`}
+          >
             <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Delete Project</h3>
             <p className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               Are you sure you want to delete the project "<strong>{projectToDelete.name}</strong>"?

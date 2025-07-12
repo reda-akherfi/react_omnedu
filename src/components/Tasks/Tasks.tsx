@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // Type definitions
 interface Task {
@@ -43,6 +43,68 @@ const Tasks: React.FC<TasksProps> = ({
     description: '',
     completed: false
   });
+
+  // Refs for click-outside detection
+  const createEditModalRef = useRef<HTMLDivElement>(null);
+  const noProjectModalRef = useRef<HTMLDivElement>(null);
+  const deleteModalRef = useRef<HTMLDivElement>(null);
+
+  // Click outside handlers
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (createEditModalRef.current && !createEditModalRef.current.contains(event.target as Node)) {
+        if (showCreateForm || editingTaskId) {
+          setShowCreateForm(false);
+          cancelEditing();
+        }
+      }
+    };
+
+    if (showCreateForm || editingTaskId) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCreateForm, editingTaskId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (noProjectModalRef.current && !noProjectModalRef.current.contains(event.target as Node)) {
+        if (showCreateForm && !currentProjectId) {
+          setShowCreateForm(false);
+          cancelEditing();
+        }
+      }
+    };
+
+    if (showCreateForm && !currentProjectId) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCreateForm, currentProjectId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (deleteModalRef.current && !deleteModalRef.current.contains(event.target as Node)) {
+        if (taskToDelete) {
+          cancelDelete();
+        }
+      }
+    };
+
+    if (taskToDelete) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [taskToDelete]);
 
   const handleCreateTask = () => {
     if (!currentProjectId) return;
@@ -141,8 +203,11 @@ const Tasks: React.FC<TasksProps> = ({
         {/* Create/Edit Modal */}
         {(showCreateForm || editingTaskId) && (
           !currentProjectId ? (
-            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-              <div className="bg-yellow-100 border border-yellow-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full text-yellow-800 text-sm">
+            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
+              <div 
+                ref={noProjectModalRef}
+                className="bg-yellow-100 border border-yellow-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full text-yellow-800 text-sm cursor-default"
+              >
                 You must select a project to create a task.
                 <div className="flex justify-end mt-4">
                   <button
@@ -158,10 +223,13 @@ const Tasks: React.FC<TasksProps> = ({
               </div>
             </div>
           ) : (
-            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-              <div className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 w-full transition-colors duration-200 ${
-                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-              }`}>
+            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
+              <div 
+                ref={createEditModalRef}
+                className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 w-full transition-colors duration-200 cursor-default ${
+                  darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+                }`}
+              >
                 <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                   {editingTaskId ? 'Edit Task' : 'New Task'}
                 </h3>
@@ -327,10 +395,13 @@ const Tasks: React.FC<TasksProps> = ({
       
       {/* Delete Confirmation Modal */}
       {taskToDelete && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 transition-colors duration-200 ${
-            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-          }`}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
+          <div 
+            ref={deleteModalRef}
+            className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 transition-colors duration-200 cursor-default ${
+              darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+            }`}
+          >
             <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Delete Task</h3>
             <p className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               Are you sure you want to delete the task "<strong>{taskToDelete.title}</strong>"?
