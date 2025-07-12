@@ -161,21 +161,12 @@ const Projects: React.FC<ProjectsProps> = ({
         </div>
       )}
 
-      {/* Project Selection */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Select Project</label>
-        <select
-          value={selectedProjectId || ''}
-          onChange={e => onSelectProject(e.target.value ? parseInt(e.target.value) : null)}
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-        >
-          <option value="">No project selected</option>
-          {projects.map(project => (
-            <option key={project.id} value={project.id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
+      {/* Project Selection Info */}
+      <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+        <p className="text-sm text-blue-700">
+          <strong>Selected Project:</strong> {selectedProjectId ? projects.find(p => p.id === selectedProjectId)?.name || 'Unknown' : 'None'}
+        </p>
+        <p className="text-xs text-blue-600 mt-1">Click anywhere on a project to select it</p>
       </div>
 
       {/* Projects List */}
@@ -186,19 +177,31 @@ const Projects: React.FC<ProjectsProps> = ({
           projects.map(project => (
             <div
               key={project.id}
-              className={`p-4 border rounded-md ${
+              className={`p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${
                 selectedProjectId === project.id
                   ? 'border-purple-500 bg-purple-50'
                   : 'border-gray-300 bg-white'
               }`}
+              onClick={() => onSelectProject(project.id)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
                     <input
+                      type="radio"
+                      name="selectedProject"
+                      checked={selectedProjectId === project.id}
+                      onChange={() => onSelectProject(project.id)}
+                      onClick={(e) => e.stopPropagation()} // Prevent double-triggering
+                      className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 focus:ring-purple-500"
+                    />
+                    <input
                       type="checkbox"
                       checked={project.completed}
-                      onChange={() => onUpdateProject(project.id, { completed: !project.completed, updatedAt: new Date() })}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        onUpdateProject(project.id, { completed: !project.completed, updatedAt: new Date() });
+                      }}
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
                     />
                     <span className={`font-medium ${project.completed ? 'line-through text-gray-400' : ''}`}>{project.name}</span>
@@ -216,13 +219,19 @@ const Projects: React.FC<ProjectsProps> = ({
                 </div>
                 <div className="flex space-x-2 ml-2">
                   <button
-                    onClick={() => handleEdit(project)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(project);
+                    }}
                     className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-xs"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDeleteClick(project)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(project);
+                    }}
                     className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs"
                   >
                     Delete

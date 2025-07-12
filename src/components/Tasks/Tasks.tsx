@@ -219,23 +219,12 @@ const Tasks: React.FC<TasksProps> = ({
           )
         )}
 
-        {/* Task Selection */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Active Task for Timer
-          </label>
-          <select
-            value={selectedTaskId || ''}
-            onChange={(e) => onSelectTask(e.target.value ? parseInt(e.target.value) : null)}
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">No task selected</option>
-            {filteredTasks.map(task => (
-              <option key={task.id} value={task.id}>
-                {task.title} {task.completed ? '(Completed)' : ''}
-              </option>
-            ))}
-          </select>
+        {/* Task Selection Info */}
+        <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+          <p className="text-sm text-blue-700">
+            <strong>Active Task for Timer:</strong> {selectedTaskId ? filteredTasks.find(t => t.id === selectedTaskId)?.title || 'Unknown' : 'None'}
+          </p>
+          <p className="text-xs text-blue-600 mt-1">Click the radio button next to a task to select it for the timer</p>
         </div>
       </div>
 
@@ -247,21 +236,32 @@ const Tasks: React.FC<TasksProps> = ({
           filteredTasks.map(task => (
             <div
               key={task.id}
-              className={`p-4 border rounded-md ${
+              className={`p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${
                 selectedTaskId === task.id
                   ? 'border-blue-500 bg-blue-50'
                   : task.completed
                   ? 'border-green-300 bg-green-50'
                   : 'border-gray-300 bg-white'
               }`}
+              onClick={() => onSelectTask(task.id)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
                     <input
+                      type="radio"
+                      name="selectedTask"
+                      checked={selectedTaskId === task.id}
+                      onChange={() => {}} // Radio button is now controlled by parent div click
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                    />
+                    <input
                       type="checkbox"
                       checked={task.completed}
-                      onChange={() => toggleTaskCompletion(task.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        toggleTaskCompletion(task.id);
+                      }}
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
                     />
                     <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
@@ -286,13 +286,19 @@ const Tasks: React.FC<TasksProps> = ({
                 
                 <div className="flex space-x-2 ml-2">
                   <button
-                    onClick={() => startEditing(task)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEditing(task);
+                    }}
                     className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-xs"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDeleteClick(task)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(task);
+                    }}
                     className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs"
                   >
                     Delete
