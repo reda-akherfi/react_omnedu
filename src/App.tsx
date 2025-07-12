@@ -26,14 +26,7 @@ interface Task {
   timerIds: number[];
 }
 
-interface TaskTimerRelationship {
-  taskId: number;
-  timerIds: number[];
-  totalSessions: number;
-  completedSessions: number;
-  totalTimeSpent: number; // in seconds
-  lastSessionDate?: Date;
-}
+
 
 // Timer types
 interface TimerSession {
@@ -73,11 +66,7 @@ const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   
-  // Task-Timer relationship tracking
-  const [taskTimerRelationships, setTaskTimerRelationships] = useState<TaskTimerRelationship[]>([]);
-  
-  // State viewer for debugging
-  const [showTimerStateViewer, setShowTimerStateViewer] = useState<boolean>(false);
+
   
   // Timer state (moved from Timer component)
   const [timerMode, setTimerMode] = useState<'pomodoro' | 'countdown' | 'stopwatch'>('pomodoro');
@@ -539,14 +528,7 @@ const App: React.FC = () => {
       timerIds: []
     };
     setTasks(prev => [...prev, newTask]);
-    // Initialize relationship tracking
-    setTaskTimerRelationships(prev => [...prev, {
-      taskId: newTask.id,
-      timerIds: [],
-      totalSessions: 0,
-      completedSessions: 0,
-      totalTimeSpent: 0
-    }]);
+
   };
 
   const updateTask = (taskId: number, updates: Partial<Task>) => {
@@ -560,8 +542,7 @@ const App: React.FC = () => {
   const deleteTask = (taskId: number) => {
     setTasks(prev => prev.filter(task => task.id !== taskId));
     
-    // Remove from relationship tracking
-    setTaskTimerRelationships(prev => prev.filter(rel => rel.taskId !== taskId));
+
     
     // If this was the selected task, deselect it
     if (selectedTaskId === taskId) {
@@ -587,18 +568,7 @@ const App: React.FC = () => {
           : task
       ));
   
-      // Update relationship tracking (only if not already counted)
-      setTaskTimerRelationships(prev => prev.map(rel => 
-        rel.taskId === taskId && !rel.timerIds.includes(sessionId)
-          ? {
-              ...rel,
-              timerIds: [...rel.timerIds, sessionId],
-              totalSessions: rel.totalSessions + 1,
-              completedSessions: rel.completedSessions + 1,  // Fixed this line
-              lastSessionDate: new Date()
-            }
-          : rel
-      ));
+
     }
   };
 
@@ -607,23 +577,8 @@ const App: React.FC = () => {
     return tasks.find(task => task.id === selectedTaskId);
   };
 
-  // Get global statistics
-  const getGlobalStats = () => {
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(task => task.completed).length;
-    const totalTimerSessions = taskTimerRelationships.reduce((sum, rel) => sum + rel.totalSessions, 0);
-    const totalCompletedSessions = taskTimerRelationships.reduce((sum, rel) => sum + rel.completedSessions, 0);
-    
-    return {
-      totalTasks,
-      completedTasks,
-      totalTimerSessions,
-      totalCompletedSessions,
-      tasksWithTimers: taskTimerRelationships.filter(rel => rel.timerIds.length > 0).length
-    };
-  };
 
-  const globalStats = getGlobalStats();
+
   const selectedTask = getSelectedTask();
 
   return (
@@ -705,16 +660,6 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-auto">
           {activeSidebarItem === 'main' && (
             <div className="p-6">
-              {/* Global Stats */}
-              <div className="text-center mb-8">
-                <div className={`text-sm space-x-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  <span>Tasks: {globalStats.totalTasks}</span>
-                  <span>Completed: {globalStats.completedTasks}</span>
-                  <span>Timer Sessions: {globalStats.totalTimerSessions}</span>
-                  <span>Tasks with Timers: {globalStats.tasksWithTimers}</span>
-                </div>
-              </div>
-
               {/* Projects Component */}
               <Projects
                 projects={projects}
@@ -760,7 +705,6 @@ const App: React.FC = () => {
                     settings={timerSettings}
                     timerHistory={timerHistory}
                     currentSession={currentSession}
-                    showStateViewer={showTimerStateViewer}
                     // Timer functions
                     onStartTimer={startTimer}
                     onPauseTimer={pauseTimer}
@@ -770,7 +714,6 @@ const App: React.FC = () => {
                     onUpdateSettings={updateTimerSettings}
                     onSetCustomCountdown={setCustomCountdown}
                     onSetShowSettings={setShowTimerSettings}
-                    onSetShowStateViewer={setShowTimerStateViewer}
                     // Display helpers
                     getDisplayTime={getDisplayTime}
                     getPhaseLabel={getPhaseLabel}
