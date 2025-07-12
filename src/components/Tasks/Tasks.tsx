@@ -35,7 +35,6 @@ const Tasks: React.FC<TasksProps> = ({
 }) => {
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
-  const [showStateViewer, setShowStateViewer] = useState<boolean>(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   
   const [formData, setFormData] = useState({
@@ -443,40 +442,6 @@ const Tasks: React.FC<TasksProps> = ({
           </div>
         </div>
       )}
-
-      {/* State Viewer */}
-      <div className="mt-6">
-        <button
-          onClick={() => setShowStateViewer(!showStateViewer)}
-          className={`w-full p-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-            darkMode ? 'bg-blue-900 hover:bg-blue-800 text-blue-200' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
-          }`}
-        >
-          {showStateViewer ? 'Hide State Viewer' : 'Show State Viewer'}
-        </button>
-        
-        {showStateViewer && (
-          <div className={`mt-4 p-4 rounded-md transition-colors duration-200 ${
-            darkMode ? 'bg-gray-700' : 'bg-gray-100'
-          }`}>
-            <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tasks State</h4>
-            <div className={`text-xs font-mono space-y-1 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-              <div><strong>Total Tasks:</strong> {tasks.length}</div>
-              <div><strong>Completed:</strong> {tasks.filter(t => t.completed).length}</div>
-              <div><strong>Selected Task ID:</strong> {selectedTaskId || 'None'}</div>
-              <div><strong>Show Create Form:</strong> {showCreateForm.toString()}</div>
-              <div><strong>Editing Task ID:</strong> {editingTaskId || 'None'}</div>
-            </div>
-            
-            <h4 className={`font-medium mt-4 mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tasks Data</h4>
-            <div className={`text-xs font-mono p-2 rounded max-h-40 overflow-y-auto transition-colors duration-200 ${
-              darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-800'
-            }`}>
-              <pre>{JSON.stringify(tasks, null, 2)}</pre>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

@@ -31,7 +31,6 @@ const Projects: React.FC<ProjectsProps> = ({
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ name: '', description: '', completed: false });
-  const [showStateViewer, setShowStateViewer] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
 
   // Refs for click-outside detection
@@ -303,35 +302,6 @@ const Projects: React.FC<ProjectsProps> = ({
               </div>
             </div>
           ))
-        )}
-      </div>
-
-      {/* State Viewer */}
-      <div className="mt-6">
-        <button
-          onClick={() => setShowStateViewer(!showStateViewer)}
-          className={`w-full p-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-            darkMode ? 'bg-purple-900 hover:bg-purple-800 text-purple-200' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'
-          }`}
-        >
-          {showStateViewer ? 'Hide State Viewer' : 'Show State Viewer'}
-        </button>
-        {showStateViewer && (
-          <div className={`mt-4 p-4 rounded-md transition-colors duration-200 ${
-            darkMode ? 'bg-gray-700' : 'bg-gray-100'
-          }`}>
-            <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Projects State</h4>
-            <div className={`text-xs font-mono space-y-1 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-              <div><strong>Total Projects:</strong> {projects.length}</div>
-              <div><strong>Selected Project ID:</strong> {selectedProjectId || 'None'}</div>
-            </div>
-            <h4 className={`font-medium mt-4 mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Projects Data</h4>
-            <div className={`text-xs font-mono p-2 rounded max-h-40 overflow-y-auto transition-colors duration-200 ${
-              darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-800'
-            }`}>
-              <pre>{JSON.stringify(projects, null, 2)}</pre>
-            </div>
-          </div>
         )}
       </div>
       

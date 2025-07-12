@@ -77,8 +77,8 @@ const App: React.FC = () => {
   const [taskTimerRelationships, setTaskTimerRelationships] = useState<TaskTimerRelationship[]>([]);
   
   // State viewer for debugging
-  const [showGlobalStateViewer, setShowGlobalStateViewer] = useState<boolean>(false);
-
+  const [showTimerStateViewer, setShowTimerStateViewer] = useState<boolean>(false);
+  
   // Timer state (moved from Timer component)
   const [timerMode, setTimerMode] = useState<'pomodoro' | 'countdown' | 'stopwatch'>('pomodoro');
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
@@ -90,7 +90,6 @@ const App: React.FC = () => {
   const [showTimerSettings, setShowTimerSettings] = useState<boolean>(false);
   const [timerHistory, setTimerHistory] = useState<TimerSession[]>([]);
   const [currentSession, setCurrentSession] = useState<TimerSession | null>(null);
-  const [showTimerStateViewer, setShowTimerStateViewer] = useState<boolean>(false);
   
   // Timer settings
   const [timerSettings, setTimerSettings] = useState<TimerSettings>({
@@ -608,11 +607,6 @@ const App: React.FC = () => {
     return tasks.find(task => task.id === selectedTaskId);
   };
 
-  // Get task-timer relationship data
-  const getTaskRelationship = (taskId: number): TaskTimerRelationship | undefined => {
-    return taskTimerRelationships.find(rel => rel.taskId === taskId);
-  };
-
   // Get global statistics
   const getGlobalStats = () => {
     const totalTasks = tasks.length;
@@ -785,109 +779,6 @@ const App: React.FC = () => {
                     getTaskCompletedSessionCount={getTaskCompletedSessionCount}
                   />
                 </div>
-              </div>
-
-              {/* Global State Viewer */}
-              <div className="mt-8 max-w-4xl mx-auto">
-                <button
-                  onClick={() => setShowGlobalStateViewer(!showGlobalStateViewer)}
-                  className={`w-full p-3 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    darkMode 
-                      ? 'bg-purple-900 hover:bg-purple-800 text-purple-200' 
-                      : 'bg-purple-100 hover:bg-purple-200 text-purple-700'
-                  }`}
-                >
-                  {showGlobalStateViewer ? 'Hide Global State Viewer' : 'Show Global State Viewer'}
-                </button>
-                
-                {showGlobalStateViewer && (
-                  <div className={`mt-4 p-6 rounded-md transition-colors duration-200 ${
-                    darkMode ? 'bg-gray-800' : 'bg-gray-100'
-                  }`}>
-                    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Global Application State</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Global Statistics */}
-                      <div>
-                        <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Global Statistics</h4>
-                        <div className={`text-sm font-mono space-y-1 p-3 rounded transition-colors duration-200 ${
-                          darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
-                        }`}>
-                          <div><strong>Total Tasks:</strong> {globalStats.totalTasks}</div>
-                          <div><strong>Completed Tasks:</strong> {globalStats.completedTasks}</div>
-                          <div><strong>Total Timer Sessions:</strong> {globalStats.totalTimerSessions}</div>
-                          <div><strong>Completed Sessions:</strong> {globalStats.totalCompletedSessions}</div>
-                          <div><strong>Tasks with Timers:</strong> {globalStats.tasksWithTimers}</div>
-                          <div><strong>Selected Task ID:</strong> {selectedTaskId || 'None'}</div>
-                        </div>
-                      </div>
-
-                      {/* Selected Task Details */}
-                      <div>
-                        <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Selected Task Details</h4>
-                        <div className={`text-xs font-mono p-3 rounded transition-colors duration-200 ${
-                          darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
-                        }`}>
-                          <pre>{JSON.stringify(selectedTask, null, 2)}</pre>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Task-Timer Relationships */}
-                    <div className="mt-6">
-                      <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Task-Timer Relationships</h4>
-                      <div className={`text-xs font-mono p-3 rounded max-h-60 overflow-y-auto transition-colors duration-200 ${
-                        darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
-                      }`}>
-                        <pre>{JSON.stringify(taskTimerRelationships, null, 2)}</pre>
-                      </div>
-                    </div>
-
-                    {/* All Tasks Data */}
-                    <div className="mt-6">
-                      <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>All Tasks Data</h4>
-                      <div className={`text-xs font-mono p-3 rounded max-h-60 overflow-y-auto transition-colors duration-200 ${
-                        darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
-                      }`}>
-                        <pre>{JSON.stringify(tasks, null, 2)}</pre>
-                      </div>
-                    </div>
-
-                    {/* Detailed Task-Timer Breakdown */}
-                    <div className="mt-6">
-                      <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Task-Timer Breakdown</h4>
-                      <div className="space-y-2">
-                        {tasks.map(task => {
-                          const relationship = getTaskRelationship(task.id);
-                          return (
-                            <div key={task.id} className={`p-3 rounded text-sm transition-colors duration-200 ${
-                              darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
-                            }`}>
-                              <div className={`font-medium ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>{task.title}</div>
-                              <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <span>ID: {task.id}</span>
-                                <span className="ml-4">Timer IDs: [{task.timerIds.join(', ')}]</span>
-                                <span className="ml-4">Sessions: {relationship?.totalSessions || 0}</span>
-                                <span className="ml-4">Completed: {relationship?.completedSessions || 0}</span>
-                                <span className="ml-4">Status: {task.completed ? 'Completed' : 'Active'}</span>
-                                {selectedTaskId === task.id && (
-                                  <span className={`ml-4 font-medium ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>← Currently Selected</span>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                        {tasks.length === 0 && (
-                          <div className={`p-3 rounded text-sm transition-colors duration-200 ${
-                            darkMode ? 'bg-gray-700 text-gray-400' : 'bg-white text-gray-500'
-                          }`}>
-                            No tasks created yet.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}

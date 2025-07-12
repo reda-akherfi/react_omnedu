@@ -39,7 +39,6 @@ interface TimerProps {
   settings: TimerSettings;
   timerHistory: TimerSession[];
   currentSession: TimerSession | null;
-  showStateViewer: boolean;
   // Timer functions
   onStartTimer: () => void;
   onPauseTimer: () => void;
@@ -49,7 +48,6 @@ interface TimerProps {
   onUpdateSettings: (key: keyof TimerSettings, value: string | number | boolean) => void;
   onSetCustomCountdown: (value: number) => void;
   onSetShowSettings: (value: boolean) => void;
-  onSetShowStateViewer: (value: boolean) => void;
   // Display helpers
   getDisplayTime: () => string;
   getPhaseLabel: () => string;
@@ -74,7 +72,6 @@ const Timer: React.FC<TimerProps> = ({
   settings,
   timerHistory,
   currentSession,
-  showStateViewer,
   // Timer functions
   onStartTimer,
   onPauseTimer,
@@ -84,7 +81,6 @@ const Timer: React.FC<TimerProps> = ({
   onUpdateSettings,
   onSetCustomCountdown,
   onSetShowSettings,
-  onSetShowStateViewer,
   // Display helpers
   getDisplayTime,
   getPhaseLabel,
@@ -359,48 +355,6 @@ const Timer: React.FC<TimerProps> = ({
         </div>
       )}
       
-      {/* State Viewer */}
-      <div className="mt-6">
-        <button
-          onClick={() => onSetShowStateViewer(!showStateViewer)}
-          className={`w-full p-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-            darkMode ? 'bg-blue-900 hover:bg-blue-800 text-blue-200' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
-          }`}
-        >
-          {showStateViewer ? 'Hide State Viewer' : 'Show State Viewer'}
-        </button>
-        
-        {showStateViewer && (
-          <div className={`mt-4 p-4 rounded-md transition-colors duration-200 ${
-            darkMode ? 'bg-gray-700' : 'bg-gray-100'
-          }`}>
-            <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Current State</h4>
-            <div className={`text-xs font-mono space-y-1 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-              <div><strong>Mode:</strong> {mode}</div>
-              <div><strong>Is Running:</strong> {isRunning.toString()}</div>
-              <div><strong>Time Left:</strong> {timeLeft}s</div>
-              <div><strong>Current Time:</strong> {currentTime}s</div>
-              <div><strong>Pomodoro Phase:</strong> {pomodoroPhase}</div>
-              <div><strong>Pomodoro Count:</strong> {pomodoroCount}</div>
-              <div><strong>Selected Task ID:</strong> {selectedTaskId || 'None'}</div>
-            </div>
-            
-            <h4 className={`font-medium mt-4 mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Current Session</h4>
-            <div className={`text-xs font-mono p-2 rounded transition-colors duration-200 ${
-              darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-800'
-            }`}>
-              <pre>{JSON.stringify(currentSession, null, 2)}</pre>
-            </div>
-            
-            <h4 className={`font-medium mt-4 mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Timer History ({timerHistory.length})</h4>
-            <div className={`text-xs font-mono p-2 rounded max-h-40 overflow-y-auto transition-colors duration-200 ${
-              darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-800'
-            }`}>
-              <pre>{JSON.stringify(timerHistory, null, 2)}</pre>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };
