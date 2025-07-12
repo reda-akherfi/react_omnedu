@@ -22,6 +22,9 @@ const Timer = () => {
   const [timerHistory, setTimerHistory] = useState([]);
   const [currentSession, setCurrentSession] = useState(null);
   
+  // State viewer for debugging
+  const [showStateViewer, setShowStateViewer] = useState(false);
+  
   const intervalRef = useRef(null);
   const startTimeRef = useRef(null);
   
@@ -98,6 +101,14 @@ const Timer = () => {
       } else {
         setPomodoroPhase('work');
       }
+      
+      // Reset timer for next phase
+      setTimeout(() => {
+        const nextPhaseDuration = getPomodoroPhaseTime(pomodoroPhase === 'work' ? 
+          (pomodoroCount % settings.longBreakInterval === 0 ? 'longBreak' : 'shortBreak') : 
+          'work');
+        setTimeLeft(nextPhaseDuration * 60);
+      }, 0);
     }
   };
   
@@ -124,15 +135,16 @@ const Timer = () => {
   const resetTimer = () => {
     setIsRunning(false);
     
-    // Mark current session as incomplete if exists
+    // Mark current session based on mode
     if (currentSession) {
-      const incompleteSession = {
+      const sessionEnd = {
         ...currentSession,
         endTime: new Date(),
-        completed: false,
-        actualDuration: mode === 'stopwatch' ? currentTime : currentSession.plannedDuration - timeLeft
+        completed: mode === 'stopwatch' ? true : false, // Stopwatch reset = complete
+        actualDuration: mode === 'stopwatch' ? currentTime : currentSession.plannedDuration - timeLeft,
+        reason: 'reset'
       };
-      setTimerHistory(prev => [...prev, incompleteSession]);
+      setTimerHistory(prev => [...prev, sessionEnd]);
       setCurrentSession(null);
     }
     
@@ -366,6 +378,40 @@ const Timer = () => {
           </div>
         </div>
       )}
+      
+      {/* State Viewer */}
+      <div className="mt-6">
+        <button
+          onClick={() => setShowStateViewer(!showStateViewer)}
+          className="w-full p-2 bg-blue-100 hover:bg-blue-200 rounded-md text-sm font-medium text-blue-700"
+        >
+          {showStateViewer ? 'Hide State Viewer' : 'Show State Viewer'}
+        </button>
+        
+        {showStateViewer && (
+          <div className="mt-4 p-4 bg-gray-100 rounded-md">
+            <h4 className="font-medium text-gray-700 mb-2">Current State</h4>
+            <div className="text-xs font-mono space-y-1">
+              <div><strong>Mode:</strong> {mode}</div>
+              <div><strong>Is Running:</strong> {isRunning.toString()}</div>
+              <div><strong>Time Left:</strong> {timeLeft}s</div>
+              <div><strong>Current Time:</strong> {currentTime}s</div>
+              <div><strong>Pomodoro Phase:</strong> {pomodoroPhase}</div>
+              <div><strong>Pomodoro Count:</strong> {pomodoroCount}</div>
+            </div>
+            
+            <h4 className="font-medium text-gray-700 mt-4 mb-2">Current Session</h4>
+            <div className="text-xs font-mono bg-white p-2 rounded">
+              <pre>{JSON.stringify(currentSession, null, 2)}</pre>
+            </div>
+            
+            <h4 className="font-medium text-gray-700 mt-4 mb-2">Timer History ({timerHistory.length})</h4>
+            <div className="text-xs font-mono bg-white p-2 rounded max-h-40 overflow-y-auto">
+              <pre>{JSON.stringify(timerHistory, null, 2)}</pre>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
