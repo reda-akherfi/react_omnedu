@@ -337,6 +337,69 @@ const App: React.FC = () => {
       setCurrentTime(0);
     }
   };
+
+  const skipTimer = () => {
+    if (timerMode !== 'pomodoro') return;
+    
+    setIsTimerRunning(false);
+    
+    // Complete current session
+    if (currentSession) {
+      const actualDuration = (currentSession.plannedDuration ?? 0) - timeLeft;
+      
+      const completedSession: TimerSession = {
+        ...currentSession,
+        endTime: new Date(),
+        completed: false,
+        actualDuration: actualDuration,
+        reason: 'skipped'
+      };
+      addUniqueSessionToHistory(completedSession);
+      setCurrentSession(null);
+    }
+    
+    // Move to next phase
+    let nextPhase: 'work' | 'shortBreak' | 'longBreak';
+    let shouldAutoStart = false;
+    
+    if (pomodoroPhase === 'work') {
+      const newCount = pomodoroCount + 1;
+      setPomodoroCount(newCount);
+      
+      if (newCount % timerSettings.longBreakInterval === 0) {
+        nextPhase = 'longBreak';
+      } else {
+        nextPhase = 'shortBreak';
+      }
+      shouldAutoStart = timerSettings.autoStartBreaks;
+    } else {
+      nextPhase = 'work';
+      shouldAutoStart = timerSettings.autoStartWork;
+    }
+    
+    setPomodoroPhase(nextPhase);
+    
+    // Reset timer for next phase and auto-start if enabled
+    setTimeout(() => {
+      const nextPhaseDuration = getPomodoroPhaseTime(nextPhase);
+      setTimeLeft(nextPhaseDuration * 60);
+      
+      if (shouldAutoStart) {
+        setIsTimerRunning(true);
+        startTimeRef.current = new Date();
+        const newSession: TimerSession = {
+          id: Date.now(),
+          taskId: selectedTaskId,
+          mode: 'pomodoro',
+          phase: nextPhase,
+          startTime: new Date(),
+          plannedDuration: nextPhaseDuration * 60,
+          completed: false
+        };
+        setCurrentSession(newSession);
+      }
+    }, 100);
+  };
   
   const handleModeChange = (newMode: 'pomodoro' | 'countdown' | 'stopwatch') => {
     if (currentSession) {
@@ -708,6 +771,7 @@ const App: React.FC = () => {
                     onStartTimer={startTimer}
                     onPauseTimer={pauseTimer}
                     onResetTimer={resetTimer}
+                    onSkipTimer={skipTimer}
                     onModeChange={handleModeChange}
                     onUpdateSettings={updateTimerSettings}
                     onSetCustomCountdown={setCustomCountdown}

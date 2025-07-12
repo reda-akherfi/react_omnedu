@@ -44,6 +44,7 @@ interface TimerProps {
   onStartTimer: () => void;
   onPauseTimer: () => void;
   onResetTimer: () => void;
+  onSkipTimer: () => void;
   onModeChange: (mode: 'pomodoro' | 'countdown' | 'stopwatch') => void;
   onUpdateSettings: (key: keyof TimerSettings, value: string | number | boolean) => void;
   onSetCustomCountdown: (value: number) => void;
@@ -78,6 +79,7 @@ const Timer: React.FC<TimerProps> = ({
   onStartTimer,
   onPauseTimer,
   onResetTimer,
+  onSkipTimer,
   onModeChange,
   onUpdateSettings,
   onSetCustomCountdown,
@@ -176,6 +178,19 @@ const Timer: React.FC<TimerProps> = ({
         >
           Reset
         </button>
+        
+        {mode === 'pomodoro' && (
+          <button
+            onClick={onSkipTimer}
+            disabled={!selectedTaskId}
+            className={`px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-md font-medium transition-colors duration-200 ${
+              !selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            title="Skip to next phase"
+          >
+            Skip
+          </button>
+        )}
       </div>
       
       <div className="space-y-4">
