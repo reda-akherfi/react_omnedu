@@ -583,8 +583,8 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-200 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      {/* Header */}
-      <div className={`border-b transition-colors duration-200 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+      {/* Header - Fixed at top */}
+      <div className={`fixed top-0 left-0 right-0 z-50 border-b transition-colors duration-200 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
         <div className="flex items-center justify-between px-6 py-4">
           <h1 className={`text-2xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Task Timer App</h1>
           <button
@@ -611,8 +611,8 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Layout */}
-      <div className="flex h-screen">
+      {/* Main Layout - Adjusted to account for fixed header */}
+      <div className="flex h-screen pt-16">
         {/* Sidebar */}
         <div className={`w-16 border-r transition-colors duration-200 flex flex-col items-center ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
           <div className="flex flex-col items-center py-4">
