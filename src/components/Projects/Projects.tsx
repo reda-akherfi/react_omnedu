@@ -238,14 +238,14 @@ const Projects: React.FC<ProjectsProps> = ({
           projects.map(project => (
             <div
               key={project.id}
-              className={`p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors duration-200 ${
+              className={`p-4 border rounded-md cursor-pointer transition-colors duration-200 ${
                 selectedProjectId === project.id
                   ? darkMode 
                     ? 'border-purple-400 bg-purple-900' 
                     : 'border-purple-500 bg-purple-50'
                   : darkMode
                     ? 'border-gray-600 bg-gray-700 hover:bg-gray-600'
-                    : 'border-gray-300 bg-white'
+                    : 'border-gray-300 bg-white hover:bg-gray-50'
               }`}
               onClick={() => onSelectProject(project.id)}
             >
