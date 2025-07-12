@@ -16,6 +16,7 @@ interface ProjectsProps {
   onDeleteProject: (id: number) => void;
   selectedProjectId: number | null;
   onSelectProject: (id: number | null) => void;
+  darkMode: boolean;
 }
 
 const Projects: React.FC<ProjectsProps> = ({
@@ -24,7 +25,8 @@ const Projects: React.FC<ProjectsProps> = ({
   onUpdateProject,
   onDeleteProject,
   selectedProjectId,
-  onSelectProject
+  onSelectProject,
+  darkMode
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
@@ -84,9 +86,11 @@ const Projects: React.FC<ProjectsProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg mb-8">
+    <div className={`max-w-2xl mx-auto p-6 rounded-lg shadow-lg mb-8 transition-colors duration-200 ${
+      darkMode ? 'bg-gray-800' : 'bg-white'
+    }`}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Projects</h2>
+        <h2 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Projects</h2>
         <button
           onClick={() => {
             setShowCreateForm(!showCreateForm);
@@ -102,27 +106,37 @@ const Projects: React.FC<ProjectsProps> = ({
       {/* Create/Edit Modal */}
       {(showCreateForm || editingProjectId) && (
         <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 w-full transition-colors duration-200 ${
+            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+          }`}>
+            <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
               {editingProjectId ? 'Edit Project' : 'New Project'}
             </h3>
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors duration-200 ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500'
+                  }`}
                   placeholder="Enter project name"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Description</label>
                 <textarea
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors duration-200 ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500'
+                  }`}
                   rows={2}
                   placeholder="Enter project description"
                 />
@@ -135,7 +149,7 @@ const Projects: React.FC<ProjectsProps> = ({
                   onChange={e => setFormData({ ...formData, completed: e.target.checked })}
                   className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
                 />
-                <label htmlFor="completed" className="text-sm font-medium text-gray-700">
+                <label htmlFor="completed" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Mark as completed
                 </label>
               </div>
@@ -162,25 +176,31 @@ const Projects: React.FC<ProjectsProps> = ({
       )}
 
       {/* Project Selection Info */}
-      <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-200">
-        <p className="text-sm text-blue-700">
+      <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
+        darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'
+      }`}>
+        <p className={`text-sm ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>
           <strong>Selected Project:</strong> {selectedProjectId ? projects.find(p => p.id === selectedProjectId)?.name || 'Unknown' : 'None'}
         </p>
-        <p className="text-xs text-blue-600 mt-1">Click anywhere on a project to select it</p>
+        <p className={`text-xs mt-1 ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>Click anywhere on a project to select it</p>
       </div>
 
       {/* Projects List */}
       <div className="space-y-3">
         {projects.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No projects yet. Create your first project!</p>
+          <p className={`text-center py-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>No projects yet. Create your first project!</p>
         ) : (
           projects.map(project => (
             <div
               key={project.id}
-              className={`p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${
+              className={`p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors duration-200 ${
                 selectedProjectId === project.id
-                  ? 'border-purple-500 bg-purple-50'
-                  : 'border-gray-300 bg-white'
+                  ? darkMode 
+                    ? 'border-purple-400 bg-purple-900' 
+                    : 'border-purple-500 bg-purple-50'
+                  : darkMode
+                    ? 'border-gray-600 bg-gray-700 hover:bg-gray-600'
+                    : 'border-gray-300 bg-white'
               }`}
               onClick={() => onSelectProject(project.id)}
             >
@@ -196,16 +216,16 @@ const Projects: React.FC<ProjectsProps> = ({
                       }}
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
                     />
-                    <span className={`font-medium ${project.completed ? 'line-through text-gray-400' : ''}`}>{project.name}</span>
+                    <span className={`font-medium ${project.completed ? 'line-through text-gray-400' : darkMode ? 'text-gray-100' : 'text-gray-900'}`}>{project.name}</span>
                     {project.completed && <span className="ml-2 text-xs text-green-600 font-semibold">Completed</span>}
                   </div>
                   {project.description && (
-                    <p className="text-sm mt-1 text-gray-600">{project.description}</p>
+                    <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{project.description}</p>
                   )}
-                  <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                  <div className={`flex items-center space-x-4 mt-2 text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     <span>Created: {new Date(project.createdAt).toLocaleDateString()}</span>
                     {selectedProjectId === project.id && (
-                      <span className="text-purple-600 font-medium">Active</span>
+                      <span className={`font-medium ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>Active</span>
                     )}
                   </div>
                 </div>
@@ -239,19 +259,25 @@ const Projects: React.FC<ProjectsProps> = ({
       <div className="mt-6">
         <button
           onClick={() => setShowStateViewer(!showStateViewer)}
-          className="w-full p-2 bg-purple-100 hover:bg-purple-200 rounded-md text-sm font-medium text-purple-700"
+          className={`w-full p-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+            darkMode ? 'bg-purple-900 hover:bg-purple-800 text-purple-200' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'
+          }`}
         >
           {showStateViewer ? 'Hide State Viewer' : 'Show State Viewer'}
         </button>
         {showStateViewer && (
-          <div className="mt-4 p-4 bg-gray-100 rounded-md">
-            <h4 className="font-medium text-gray-700 mb-2">Projects State</h4>
-            <div className="text-xs font-mono space-y-1">
+          <div className={`mt-4 p-4 rounded-md transition-colors duration-200 ${
+            darkMode ? 'bg-gray-700' : 'bg-gray-100'
+          }`}>
+            <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Projects State</h4>
+            <div className={`text-xs font-mono space-y-1 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
               <div><strong>Total Projects:</strong> {projects.length}</div>
               <div><strong>Selected Project ID:</strong> {selectedProjectId || 'None'}</div>
             </div>
-            <h4 className="font-medium text-gray-700 mt-4 mb-2">Projects Data</h4>
-            <div className="text-xs font-mono bg-white p-2 rounded max-h-40 overflow-y-auto">
+            <h4 className={`font-medium mt-4 mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Projects Data</h4>
+            <div className={`text-xs font-mono p-2 rounded max-h-40 overflow-y-auto transition-colors duration-200 ${
+              darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-800'
+            }`}>
               <pre>{JSON.stringify(projects, null, 2)}</pre>
             </div>
           </div>
@@ -261,9 +287,11 @@ const Projects: React.FC<ProjectsProps> = ({
       {/* Delete Confirmation Modal */}
       {projectToDelete && (
         <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Project</h3>
-            <p className="text-gray-700 mb-6">
+          <div className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 transition-colors duration-200 ${
+            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+          }`}>
+            <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Delete Project</h3>
+            <p className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               Are you sure you want to delete the project "<strong>{projectToDelete.name}</strong>"?
             </p>
             <p className="text-sm text-red-600 mb-6">

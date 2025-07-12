@@ -27,12 +27,14 @@ interface TimerProps {
   selectedTaskId: number | null;
   onTimerSessionComplete: (sessionId: number, taskId: number | null) => void;
   taskTitle?: string;
+  darkMode: boolean;
 }
 
 const Timer: React.FC<TimerProps> = ({ 
   selectedTaskId, 
   onTimerSessionComplete, 
-  taskTitle 
+  taskTitle,
+  darkMode
 }) => {
   const [mode, setMode] = useState<'pomodoro' | 'countdown' | 'stopwatch'>('pomodoro');
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -391,21 +393,27 @@ const handleTaskSwitch = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className={`max-w-md mx-auto p-6 rounded-lg shadow-lg transition-colors duration-200 ${
+      darkMode ? 'bg-gray-800' : 'bg-white'
+    }`}>
       {/* Task Info */}
       {selectedTaskId && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-200">
-          <h3 className="text-sm font-medium text-blue-800 mb-1">Working on:</h3>
-          <p className="text-blue-700 font-medium">{taskTitle || `Task #${selectedTaskId}`}</p>
-          <div className="text-xs text-blue-600 mt-1">
+        <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
+          darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'
+        }`}>
+          <h3 className={`text-sm font-medium mb-1 ${darkMode ? 'text-blue-200' : 'text-blue-800'}`}>Working on:</h3>
+          <p className={`font-medium ${darkMode ? 'text-blue-100' : 'text-blue-700'}`}>{taskTitle || `Task #${selectedTaskId}`}</p>
+          <div className={`text-xs mt-1 ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
             Sessions: {getTaskSessionCount()} • Completed: {getTaskCompletedSessionCount()}
           </div>
         </div>
       )}
       
       {!selectedTaskId && (
-        <div className="mb-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
-          <p className="text-yellow-700 text-sm">⚠️ No task selected. Timer sessions won't be linked to any task.</p>
+        <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
+          darkMode ? 'bg-yellow-900 border-yellow-700' : 'bg-yellow-50 border-yellow-200'
+        }`}>
+          <p className={`text-sm ${darkMode ? 'text-yellow-200' : 'text-yellow-700'}`}>⚠️ No task selected. Timer sessions won't be linked to any task.</p>
         </div>
       )}
 
@@ -413,7 +421,11 @@ const handleTaskSwitch = () => {
         <select 
           value={mode} 
           onChange={(e) => handleModeChange(e.target.value as 'pomodoro' | 'countdown' | 'stopwatch')}
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'border-gray-300 text-gray-900'
+          }`}
         >
           <option value="pomodoro">Pomodoro</option>
           <option value="countdown">Countdown</option>
@@ -422,8 +434,8 @@ const handleTaskSwitch = () => {
       </div>
       
       <div className="text-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">{getPhaseLabel()}</h2>
-        <div className="text-6xl font-mono font-bold text-gray-800 mb-4">
+        <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{getPhaseLabel()}</h2>
+        <div className={`text-6xl font-mono font-bold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
           {getDisplayTime()}
         </div>
         
@@ -437,7 +449,7 @@ const handleTaskSwitch = () => {
         )}
         
         {mode === 'pomodoro' && (
-          <div className="text-sm text-gray-600 mb-4">
+          <div className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Session {pomodoroCount + 1} • {pomodoroPhase === 'work' ? 'Focus' : 'Break'}
           </div>
         )}
@@ -466,14 +478,18 @@ const handleTaskSwitch = () => {
       <div className="space-y-4">
         {mode === 'countdown' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               Countdown Duration (minutes)
             </label>
             <input
               type="number"
               value={customCountdown / 60}
               onChange={(e) => setCustomCountdown(parseInt(e.target.value) * 60)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+                darkMode 
+                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                  : 'border-gray-300 text-gray-900'
+              }`}
               min="1"
               max="999"
             />
@@ -484,64 +500,84 @@ const handleTaskSwitch = () => {
           <div>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="w-full p-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium text-gray-700"
+              className={`w-full p-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              }`}
             >
               {showSettings ? 'Hide Settings' : 'Show Settings'}
             </button>
             
             {showSettings && (
-              <div className="mt-4 space-y-3 p-4 bg-gray-50 rounded-md">
+              <div className={`mt-4 space-y-3 p-4 rounded-md transition-colors duration-200 ${
+                darkMode ? 'bg-gray-700' : 'bg-gray-50'
+              }`}>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Work Duration (minutes)
                   </label>
                   <input
                     type="number"
                     value={settings.workDuration}
                     onChange={(e) => updateSettings('workDuration', e.target.value)}
-                    className="w-full p-1 border border-gray-300 rounded text-sm"
+                    className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
+                      darkMode 
+                        ? 'bg-gray-600 border-gray-500 text-gray-100' 
+                        : 'border-gray-300 text-gray-900'
+                    }`}
                     min="1"
                     max="120"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Short Break (minutes)
                   </label>
                   <input
                     type="number"
                     value={settings.shortBreakDuration}
                     onChange={(e) => updateSettings('shortBreakDuration', e.target.value)}
-                    className="w-full p-1 border border-gray-300 rounded text-sm"
+                    className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
+                      darkMode 
+                        ? 'bg-gray-600 border-gray-500 text-gray-100' 
+                        : 'border-gray-300 text-gray-900'
+                    }`}
                     min="1"
                     max="60"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Long Break (minutes)
                   </label>
                   <input
                     type="number"
                     value={settings.longBreakDuration}
                     onChange={(e) => updateSettings('longBreakDuration', e.target.value)}
-                    className="w-full p-1 border border-gray-300 rounded text-sm"
+                    className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
+                      darkMode 
+                        ? 'bg-gray-600 border-gray-500 text-gray-100' 
+                        : 'border-gray-300 text-gray-900'
+                    }`}
                     min="1"
                     max="120"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Long Break Interval (sessions)
                   </label>
                   <input
                     type="number"
                     value={settings.longBreakInterval}
                     onChange={(e) => updateSettings('longBreakInterval', e.target.value)}
-                    className="w-full p-1 border border-gray-300 rounded text-sm"
+                    className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
+                      darkMode 
+                        ? 'bg-gray-600 border-gray-500 text-gray-100' 
+                        : 'border-gray-300 text-gray-900'
+                    }`}
                     min="2"
                     max="10"
                   />
@@ -555,7 +591,7 @@ const handleTaskSwitch = () => {
                     onChange={(e) => updateSettings('autoStartWork', e.target.checked)}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="autoStartWork" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="autoStartWork" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Auto-start work sessions
                   </label>
                 </div>
@@ -568,7 +604,7 @@ const handleTaskSwitch = () => {
                     onChange={(e) => updateSettings('autoStartBreaks', e.target.checked)}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="autoStartBreaks" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="autoStartBreaks" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Auto-start break sessions
                   </label>
                 </div>
@@ -579,11 +615,13 @@ const handleTaskSwitch = () => {
       </div>
       
       {timerHistory.length > 0 && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-md">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">
+        <div className={`mt-6 p-4 rounded-md transition-colors duration-200 ${
+          darkMode ? 'bg-gray-700' : 'bg-gray-50'
+        }`}>
+          <h3 className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Recent Sessions ({timerHistory.length})
           </h3>
-          <div className="text-xs text-gray-600">
+          <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Completed: {timerHistory.filter(s => s.completed).length} • 
             Incomplete: {timerHistory.filter(s => !s.completed).length} •
             With Tasks: {timerHistory.filter(s => s.taskId !== null).length}
@@ -595,15 +633,19 @@ const handleTaskSwitch = () => {
       <div className="mt-6">
         <button
           onClick={() => setShowStateViewer(!showStateViewer)}
-          className="w-full p-2 bg-blue-100 hover:bg-blue-200 rounded-md text-sm font-medium text-blue-700"
+          className={`w-full p-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+            darkMode ? 'bg-blue-900 hover:bg-blue-800 text-blue-200' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
+          }`}
         >
           {showStateViewer ? 'Hide State Viewer' : 'Show State Viewer'}
         </button>
         
         {showStateViewer && (
-          <div className="mt-4 p-4 bg-gray-100 rounded-md">
-            <h4 className="font-medium text-gray-700 mb-2">Current State</h4>
-            <div className="text-xs font-mono space-y-1">
+          <div className={`mt-4 p-4 rounded-md transition-colors duration-200 ${
+            darkMode ? 'bg-gray-700' : 'bg-gray-100'
+          }`}>
+            <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Current State</h4>
+            <div className={`text-xs font-mono space-y-1 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
               <div><strong>Mode:</strong> {mode}</div>
               <div><strong>Is Running:</strong> {isRunning.toString()}</div>
               <div><strong>Time Left:</strong> {timeLeft}s</div>
@@ -613,13 +655,17 @@ const handleTaskSwitch = () => {
               <div><strong>Selected Task ID:</strong> {selectedTaskId || 'None'}</div>
             </div>
             
-            <h4 className="font-medium text-gray-700 mt-4 mb-2">Current Session</h4>
-            <div className="text-xs font-mono bg-white p-2 rounded">
+            <h4 className={`font-medium mt-4 mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Current Session</h4>
+            <div className={`text-xs font-mono p-2 rounded transition-colors duration-200 ${
+              darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-800'
+            }`}>
               <pre>{JSON.stringify(currentSession, null, 2)}</pre>
             </div>
             
-            <h4 className="font-medium text-gray-700 mt-4 mb-2">Timer History ({timerHistory.length})</h4>
-            <div className="text-xs font-mono bg-white p-2 rounded max-h-40 overflow-y-auto">
+            <h4 className={`font-medium mt-4 mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Timer History ({timerHistory.length})</h4>
+            <div className={`text-xs font-mono p-2 rounded max-h-40 overflow-y-auto transition-colors duration-200 ${
+              darkMode ? 'bg-gray-600 text-gray-200' : 'bg-white text-gray-800'
+            }`}>
               <pre>{JSON.stringify(timerHistory, null, 2)}</pre>
             </div>
           </div>

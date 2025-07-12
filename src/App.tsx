@@ -39,6 +39,9 @@ interface TaskTimerRelationship {
 }
 
 const App: React.FC = () => {
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  
   // Projects state
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
@@ -52,6 +55,11 @@ const App: React.FC = () => {
   
   // State viewer for debugging
   const [showGlobalStateViewer, setShowGlobalStateViewer] = useState<boolean>(false);
+
+  // Dark mode toggle function
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   // Project CRUD operations
   const createProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
@@ -198,12 +206,36 @@ const App: React.FC = () => {
   const selectedTask = getSelectedTask();
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Task Timer App</h1>
-          <div className="text-sm text-gray-600 space-x-4">
+          <div className="flex items-center justify-between mb-4">
+            <div></div> {/* Empty div for spacing */}
+            <button
+              onClick={toggleDarkMode}
+              className={`p-3 rounded-full transition-colors duration-200 ${
+                darkMode 
+                  ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
+                  : 'bg-white hover:bg-gray-50 text-gray-700 shadow-md'
+              }`}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {darkMode ? (
+                // Sun icon for dark mode (to switch to light)
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                // Moon icon for light mode (to switch to dark)
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                </svg>
+              )}
+            </button>
+          </div>
+          <h1 className={`text-3xl font-bold mb-2 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Task Timer App</h1>
+          <div className={`text-sm space-x-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             <span>Tasks: {globalStats.totalTasks}</span>
             <span>Completed: {globalStats.completedTasks}</span>
             <span>Timer Sessions: {globalStats.totalTimerSessions}</span>
@@ -219,6 +251,7 @@ const App: React.FC = () => {
           onDeleteProject={deleteProject}
           selectedProjectId={selectedProjectId}
           onSelectProject={selectProject}
+          darkMode={darkMode}
         />
 
         {/* Main Content */}
@@ -233,6 +266,7 @@ const App: React.FC = () => {
               selectedTaskId={selectedTaskId}
               onSelectTask={selectTask}
               currentProjectId={selectedProjectId}
+              darkMode={darkMode}
             />
           </div>
 
@@ -242,6 +276,7 @@ const App: React.FC = () => {
               selectedTaskId={selectedTaskId}
               onTimerSessionComplete={handleTimerSessionComplete}
               taskTitle={selectedTask?.title}
+              darkMode={darkMode}
             />
           </div>
         </div>
@@ -250,20 +285,28 @@ const App: React.FC = () => {
         <div className="mt-8 max-w-4xl mx-auto">
           <button
             onClick={() => setShowGlobalStateViewer(!showGlobalStateViewer)}
-            className="w-full p-3 bg-purple-100 hover:bg-purple-200 rounded-md text-sm font-medium text-purple-700"
+            className={`w-full p-3 rounded-md text-sm font-medium transition-colors duration-200 ${
+              darkMode 
+                ? 'bg-purple-900 hover:bg-purple-800 text-purple-200' 
+                : 'bg-purple-100 hover:bg-purple-200 text-purple-700'
+            }`}
           >
             {showGlobalStateViewer ? 'Hide Global State Viewer' : 'Show Global State Viewer'}
           </button>
           
           {showGlobalStateViewer && (
-            <div className="mt-4 p-6 bg-gray-100 rounded-md">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">Global Application State</h3>
+            <div className={`mt-4 p-6 rounded-md transition-colors duration-200 ${
+              darkMode ? 'bg-gray-800' : 'bg-gray-100'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Global Application State</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Global Statistics */}
                 <div>
-                  <h4 className="font-medium text-gray-700 mb-2">Global Statistics</h4>
-                  <div className="text-sm font-mono space-y-1 bg-white p-3 rounded">
+                  <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Global Statistics</h4>
+                  <div className={`text-sm font-mono space-y-1 p-3 rounded transition-colors duration-200 ${
+                    darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
+                  }`}>
                     <div><strong>Total Tasks:</strong> {globalStats.totalTasks}</div>
                     <div><strong>Completed Tasks:</strong> {globalStats.completedTasks}</div>
                     <div><strong>Total Timer Sessions:</strong> {globalStats.totalTimerSessions}</div>
@@ -275,8 +318,10 @@ const App: React.FC = () => {
 
                 {/* Selected Task Details */}
                 <div>
-                  <h4 className="font-medium text-gray-700 mb-2">Selected Task Details</h4>
-                  <div className="text-xs font-mono bg-white p-3 rounded">
+                  <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Selected Task Details</h4>
+                  <div className={`text-xs font-mono p-3 rounded transition-colors duration-200 ${
+                    darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
+                  }`}>
                     <pre>{JSON.stringify(selectedTask, null, 2)}</pre>
                   </div>
                 </div>
@@ -284,44 +329,52 @@ const App: React.FC = () => {
 
               {/* Task-Timer Relationships */}
               <div className="mt-6">
-                <h4 className="font-medium text-gray-700 mb-2">Task-Timer Relationships</h4>
-                <div className="text-xs font-mono bg-white p-3 rounded max-h-60 overflow-y-auto">
+                <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Task-Timer Relationships</h4>
+                <div className={`text-xs font-mono p-3 rounded max-h-60 overflow-y-auto transition-colors duration-200 ${
+                  darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
+                }`}>
                   <pre>{JSON.stringify(taskTimerRelationships, null, 2)}</pre>
                 </div>
               </div>
 
               {/* All Tasks Data */}
               <div className="mt-6">
-                <h4 className="font-medium text-gray-700 mb-2">All Tasks Data</h4>
-                <div className="text-xs font-mono bg-white p-3 rounded max-h-60 overflow-y-auto">
+                <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>All Tasks Data</h4>
+                <div className={`text-xs font-mono p-3 rounded max-h-60 overflow-y-auto transition-colors duration-200 ${
+                  darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
+                }`}>
                   <pre>{JSON.stringify(tasks, null, 2)}</pre>
                 </div>
               </div>
 
               {/* Detailed Task-Timer Breakdown */}
               <div className="mt-6">
-                <h4 className="font-medium text-gray-700 mb-2">Task-Timer Breakdown</h4>
+                <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Task-Timer Breakdown</h4>
                 <div className="space-y-2">
                   {tasks.map(task => {
                     const relationship = getTaskRelationship(task.id);
                     return (
-                      <div key={task.id} className="bg-white p-3 rounded text-sm">
-                        <div className="font-medium text-gray-800">{task.title}</div>
-                        <div className="text-xs text-gray-600 mt-1">
+                      <div key={task.id} className={`p-3 rounded text-sm transition-colors duration-200 ${
+                        darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-800'
+                      }`}>
+                        <div className={`font-medium ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>{task.title}</div>
+                        <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                           <span>ID: {task.id}</span>
                           <span className="ml-4">Timer IDs: [{task.timerIds.join(', ')}]</span>
                           <span className="ml-4">Sessions: {relationship?.totalSessions || 0}</span>
                           <span className="ml-4">Completed: {relationship?.completedSessions || 0}</span>
                           <span className="ml-4">Status: {task.completed ? 'Completed' : 'Active'}</span>
                           {selectedTaskId === task.id && (
-                            <span className="ml-4 text-blue-600 font-medium">← Currently Selected</span>
+                            <span className={`ml-4 font-medium ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>← Currently Selected</span>
                           )}
                         </div>
                       </div>
                     );
                   })}
                   {tasks.length === 0 && (
-                    <div className="bg-white p-3 rounded text-sm text-gray-500">
+                    <div className={`p-3 rounded text-sm transition-colors duration-200 ${
+                      darkMode ? 'bg-gray-700 text-gray-400' : 'bg-white text-gray-500'
+                    }`}>
                       No tasks created yet.
                     </div>
                   )}
