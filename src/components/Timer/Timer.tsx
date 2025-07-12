@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { GiTomato } from 'react-icons/gi';
+import { FaHourglassHalf, FaStopwatch, FaCog } from 'react-icons/fa';
 
 // Type definitions
 interface TimerSession {
@@ -101,9 +103,69 @@ const Timer: React.FC<TimerProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showSettingsModal]);
 
-  // Gear icon
-  const gearIcon = (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zm7.94-2.06a1 1 0 0 0 .26-1.09l-1-1.73a1 1 0 0 1 .21-1.18l1.51-1.51a1 1 0 0 0 0-1.42l-2.12-2.12a1 1 0 0 0-1.42 0l-1.51 1.51a1 1 0 0 1-1.18.21l-1.73-1a1 1 0 0 0-1.09.26l-1.06 1.06a1 1 0 0 0-.26 1.09l1 1.73a1 1 0 0 1-.21 1.18l-1.51 1.51a1 1 0 0 0 0 1.42l2.12 2.12a1 1 0 0 0 1.42 0l1.51-1.51a1 1 0 0 1 1.18-.21l1.73 1a1 1 0 0 0 1.09-.26l1.06-1.06z"/></svg>
+  // Icons
+  const iconClass = 'w-6 h-6';
+  // Use react-icons for mode and settings
+  const pomodoroIcon = <GiTomato className={iconClass} />;
+  const countdownIcon = <FaHourglassHalf className={iconClass} />;
+  const stopwatchIcon = <FaStopwatch className={iconClass} />;
+  const gearIcon = <FaCog className="w-6 h-6" />;
+
+  // Horizontal mode menu
+  const modeMenu = (
+    <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => onModeChange('pomodoro')}
+          className={`flex items-center justify-center rounded-md p-2 transition-colors duration-200 ${
+            mode === 'pomodoro'
+              ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+              : darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
+          }`}
+          title="Pomodoro"
+          type="button"
+          aria-pressed={mode === 'pomodoro'}
+        >
+          {pomodoroIcon}
+        </button>
+        <button
+          onClick={() => onModeChange('countdown')}
+          className={`flex items-center justify-center rounded-md p-2 transition-colors duration-200 ${
+            mode === 'countdown'
+              ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+              : darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
+          }`}
+          title="Countdown"
+          type="button"
+          aria-pressed={mode === 'countdown'}
+        >
+          {countdownIcon}
+        </button>
+        <button
+          onClick={() => onModeChange('stopwatch')}
+          className={`flex items-center justify-center rounded-md p-2 transition-colors duration-200 ${
+            mode === 'stopwatch'
+              ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+              : darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
+          }`}
+          title="Stopwatch"
+          type="button"
+          aria-pressed={mode === 'stopwatch'}
+        >
+          {stopwatchIcon}
+        </button>
+      </div>
+      <button
+        onClick={() => setShowSettingsModal(true)}
+        className={`flex items-center justify-center rounded-md p-2 transition-colors duration-200 ${
+          darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
+        }`}
+        title="Timer Settings"
+        type="button"
+      >
+        {gearIcon}
+      </button>
+    </div>
   );
 
   return (
@@ -130,33 +192,8 @@ const Timer: React.FC<TimerProps> = ({
         </div>
       )}
 
-      {/* Mode selector and gear button */}
-      <div className="flex items-center mb-6">
-        <select 
-          value={mode} 
-          onChange={(e) => onModeChange(e.target.value as 'pomodoro' | 'countdown' | 'stopwatch')}
-          disabled={!selectedTaskId}
-          className={`flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'border-gray-300 text-gray-900'
-          } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          <option value="pomodoro">Pomodoro</option>
-          <option value="countdown">Countdown</option>
-          <option value="stopwatch">Stopwatch</option>
-        </select>
-        <button
-          onClick={() => setShowSettingsModal(true)}
-          className={`ml-2 flex items-center justify-center rounded-md p-2 transition-colors duration-200 ${
-            darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
-          }`}
-          title="Timer Settings"
-          type="button"
-        >
-          {gearIcon}
-        </button>
-      </div>
+      {/* Mode menu and settings gear */}
+      {modeMenu}
 
       {/* Timer display and controls ... unchanged ... */}
       <div className="text-center mb-6">
