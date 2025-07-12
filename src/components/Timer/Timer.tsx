@@ -52,6 +52,14 @@ const Timer: React.FC = () => {
   const intervalRef = useRef<number | null>(null);
   const startTimeRef = useRef<Date | null>(null);
   
+  const addUniqueSessionToHistory = (session: TimerSession) => {
+    setTimerHistory(prev => {
+      const alreadyExists = prev.some(s => s.id === session.id);
+      return alreadyExists ? prev : [...prev, session];
+    });
+  };
+
+  
   // Initialize timer based on mode
   useEffect(() => {
     if (mode === 'pomodoro') {
@@ -85,7 +93,7 @@ const Timer: React.FC = () => {
                   completed: true,
                   actualDuration: actualDuration
                 };
-                setTimerHistory(prev => [...prev, completedSession]);
+                addUniqueSessionToHistory(completedSession);
                 setCurrentSession(null);
               }
               
@@ -190,7 +198,8 @@ const Timer: React.FC = () => {
         actualDuration: actualDuration,
         reason: 'reset'
       };
-      setTimerHistory(prev => [...prev, sessionEnd]);
+      addUniqueSessionToHistory(sessionEnd);
+
       setCurrentSession(null);
     }
     
@@ -216,7 +225,7 @@ const Timer: React.FC = () => {
         actualDuration: actualDuration,
         reason: 'mode_changed'
       };
-      setTimerHistory(prev => [...prev, completedSession]);
+      addUniqueSessionToHistory(completedSession);
       setCurrentSession(null);
     }
     
