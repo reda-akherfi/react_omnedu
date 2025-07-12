@@ -98,9 +98,9 @@ const handleTaskSwitch = () => {
   
   // Settings state
   const [settings, setSettings] = useState<TimerSettings>({
-    workDuration: 25,
-    shortBreakDuration: 5,
-    longBreakDuration: 15,
+    workDuration: 1,
+    shortBreakDuration: 1,
+    longBreakDuration: 1,
     longBreakInterval: 4,
     autoStartWork: false,
     autoStartBreaks: false
