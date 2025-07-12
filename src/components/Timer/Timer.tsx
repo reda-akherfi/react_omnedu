@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // Type definitions
 interface TimerSession {
   id: number;
+  taskId: number | null; // Link to task
   mode: 'pomodoro' | 'countdown' | 'stopwatch';
   phase: 'work' | 'shortBreak' | 'longBreak' | null;
   startTime: Date;
@@ -22,7 +23,17 @@ interface TimerSettings {
   autoStartBreaks: boolean;
 }
 
-const Timer: React.FC = () => {
+interface TimerProps {
+  selectedTaskId: number | null;
+  onTimerSessionComplete: (sessionId: number, taskId: number | null) => void;
+  taskTitle?: string;
+}
+
+const Timer: React.FC<TimerProps> = ({ 
+  selectedTaskId, 
+  onTimerSessionComplete, 
+  taskTitle 
+}) => {
   const [mode, setMode] = useState<'pomodoro' | 'countdown' | 'stopwatch'>('pomodoro');
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(25 * 60); // 25 minutes in seconds
@@ -55,23 +66,29 @@ const Timer: React.FC = () => {
   const addUniqueSessionToHistory = (session: TimerSession) => {
     setTimerHistory(prev => {
       const alreadyExists = prev.some(s => s.id === session.id);
-      return alreadyExists ? prev : [...prev, session];
+      if (!alreadyExists) {
+        // Notify parent component about the completed session
+        if (session.completed) {
+          onTimerSessionComplete(session.id, session.taskId);
+        }
+        return [...prev, session];
+      }
+      return prev;
     });
   };
 
-  
   // Initialize timer based on mode
   useEffect(() => {
     if (!isRunning) {
-    if (mode === 'pomodoro') {
-      const duration = getPomodoroPhaseTime(pomodoroPhase);
-      setTimeLeft(duration * 60);
-    } else if (mode === 'countdown') {
-      setTimeLeft(customCountdown);
-    } else if (mode === 'stopwatch') {
-      setCurrentTime(0);
+      if (mode === 'pomodoro') {
+        const duration = getPomodoroPhaseTime(pomodoroPhase);
+        setTimeLeft(duration * 60);
+      } else if (mode === 'countdown') {
+        setTimeLeft(customCountdown);
+      } else if (mode === 'stopwatch') {
+        setCurrentTime(0);
+      }
     }
-}
   }, [mode, pomodoroPhase, customCountdown, settings]);
   
   // Timer logic
@@ -131,6 +148,7 @@ const Timer: React.FC = () => {
                     startTimeRef.current = new Date();
                     const newSession: TimerSession = {
                       id: Date.now(),
+                      taskId: selectedTaskId,
                       mode: 'pomodoro',
                       phase: nextPhase,
                       startTime: new Date(),
@@ -155,7 +173,7 @@ const Timer: React.FC = () => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRunning, mode, currentSession, pomodoroPhase, pomodoroCount, settings.longBreakInterval, settings.autoStartWork, settings.autoStartBreaks, currentTime]);
+  }, [isRunning, mode, currentSession, pomodoroPhase, pomodoroCount, settings.longBreakInterval, settings.autoStartWork, settings.autoStartBreaks, currentTime, selectedTaskId]);
   
   const getPomodoroPhaseTime = (phase: 'work' | 'shortBreak' | 'longBreak'): number => {
     switch (phase) {
@@ -173,6 +191,7 @@ const Timer: React.FC = () => {
     // Create new session
     const newSession: TimerSession = {
       id: Date.now(),
+      taskId: selectedTaskId,
       mode,
       phase: mode === 'pomodoro' ? pomodoroPhase : null,
       startTime: new Date(),
@@ -201,7 +220,6 @@ const Timer: React.FC = () => {
         reason: 'reset'
       };
       addUniqueSessionToHistory(sessionEnd);
-
       setCurrentSession(null);
     }
     
@@ -285,8 +303,35 @@ const Timer: React.FC = () => {
     return 0;
   };
 
+  const getTaskSessionCount = (): number => {
+    if (!selectedTaskId) return 0;
+    return timerHistory.filter(session => session.taskId === selectedTaskId).length;
+  };
+
+  const getTaskCompletedSessionCount = (): number => {
+    if (!selectedTaskId) return 0;
+    return timerHistory.filter(session => session.taskId === selectedTaskId && session.completed).length;
+  };
+
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      {/* Task Info */}
+      {selectedTaskId && (
+        <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+          <h3 className="text-sm font-medium text-blue-800 mb-1">Working on:</h3>
+          <p className="text-blue-700 font-medium">{taskTitle || `Task #${selectedTaskId}`}</p>
+          <div className="text-xs text-blue-600 mt-1">
+            Sessions: {getTaskSessionCount()} • Completed: {getTaskCompletedSessionCount()}
+          </div>
+        </div>
+      )}
+      
+      {!selectedTaskId && (
+        <div className="mb-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
+          <p className="text-yellow-700 text-sm">⚠️ No task selected. Timer sessions won't be linked to any task.</p>
+        </div>
+      )}
+
       <div className="mb-6">
         <select 
           value={mode} 
@@ -463,7 +508,8 @@ const Timer: React.FC = () => {
           </h3>
           <div className="text-xs text-gray-600">
             Completed: {timerHistory.filter(s => s.completed).length} • 
-            Incomplete: {timerHistory.filter(s => !s.completed).length}
+            Incomplete: {timerHistory.filter(s => !s.completed).length} •
+            With Tasks: {timerHistory.filter(s => s.taskId !== null).length}
           </div>
         </div>
       )}
@@ -487,6 +533,7 @@ const Timer: React.FC = () => {
               <div><strong>Current Time:</strong> {currentTime}s</div>
               <div><strong>Pomodoro Phase:</strong> {pomodoroPhase}</div>
               <div><strong>Pomodoro Count:</strong> {pomodoroCount}</div>
+              <div><strong>Selected Task ID:</strong> {selectedTaskId || 'None'}</div>
             </div>
             
             <h4 className="font-medium text-gray-700 mt-4 mb-2">Current Session</h4>

@@ -1,0 +1,293 @@
+import React, { useState } from 'react';
+
+// Type definitions
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  completed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  timerIds: number[];
+}
+
+interface TasksProps {
+  tasks: Task[];
+  onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timerIds'>) => void;
+  onUpdateTask: (id: number, updates: Partial<Task>) => void;
+  onDeleteTask: (id: number) => void;
+  selectedTaskId: number | null;
+  onSelectTask: (taskId: number | null) => void;
+}
+
+const Tasks: React.FC<TasksProps> = ({
+  tasks,
+  onCreateTask,
+  onUpdateTask,
+  onDeleteTask,
+  selectedTaskId,
+  onSelectTask
+}) => {
+  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+  const [showStateViewer, setShowStateViewer] = useState<boolean>(false);
+  
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    completed: false
+  });
+
+  const handleCreateTask = () => {
+    if (formData.title.trim()) {
+      onCreateTask({
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        completed: formData.completed
+      });
+      setFormData({ title: '', description: '', completed: false });
+      setShowCreateForm(false);
+    }
+  };
+
+  const handleUpdateTask = (taskId: number) => {
+    if (formData.title.trim()) {
+      onUpdateTask(taskId, {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        completed: formData.completed,
+        updatedAt: new Date()
+      });
+      setFormData({ title: '', description: '', completed: false });
+      setEditingTaskId(null);
+    }
+  };
+
+  const startEditing = (task: Task) => {
+    setFormData({
+      title: task.title,
+      description: task.description,
+      completed: task.completed
+    });
+    setEditingTaskId(task.id);
+    setShowCreateForm(false);
+  };
+
+  const cancelEditing = () => {
+    setEditingTaskId(null);
+    setFormData({ title: '', description: '', completed: false });
+  };
+
+  const toggleTaskCompletion = (taskId: number) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      onUpdateTask(taskId, { 
+        completed: !task.completed,
+        updatedAt: new Date()
+      });
+    }
+  };
+
+  const getTimerCount = (taskId: number): number => {
+    const task = tasks.find(t => t.id === taskId);
+    return task ? task.timerIds.length : 0;
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-800">Tasks</h2>
+          <button
+            onClick={() => {
+              setShowCreateForm(!showCreateForm);
+              setEditingTaskId(null);
+              setFormData({ title: '', description: '', completed: false });
+            }}
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium"
+          >
+            {showCreateForm ? 'Cancel' : 'New Task'}
+          </button>
+        </div>
+
+        {/* Create/Edit Form */}
+        {(showCreateForm || editingTaskId) && (
+          <div className="mb-4 p-4 bg-gray-50 rounded-md">
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter task title"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="Enter task description"
+                />
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="completed"
+                  checked={formData.completed}
+                  onChange={(e) => setFormData({ ...formData, completed: e.target.checked })}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="completed" className="text-sm font-medium text-gray-700">
+                  Mark as completed
+                </label>
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => editingTaskId ? handleUpdateTask(editingTaskId) : handleCreateTask()}
+                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium"
+                >
+                  {editingTaskId ? 'Update' : 'Create'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    cancelEditing();
+                  }}
+                  className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Task Selection */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Active Task for Timer
+          </label>
+          <select
+            value={selectedTaskId || ''}
+            onChange={(e) => onSelectTask(e.target.value ? parseInt(e.target.value) : null)}
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">No task selected</option>
+            {tasks.map(task => (
+              <option key={task.id} value={task.id}>
+                {task.title} {task.completed ? '(Completed)' : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Tasks List */}
+      <div className="space-y-3">
+        {tasks.length === 0 ? (
+          <p className="text-gray-500 text-center py-4">No tasks yet. Create your first task!</p>
+        ) : (
+          tasks.map(task => (
+            <div
+              key={task.id}
+              className={`p-4 border rounded-md ${
+                selectedTaskId === task.id
+                  ? 'border-blue-500 bg-blue-50'
+                  : task.completed
+                  ? 'border-green-300 bg-green-50'
+                  : 'border-gray-300 bg-white'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => toggleTaskCompletion(task.id)}
+                      className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                      {task.title}
+                    </h3>
+                  </div>
+                  
+                  {task.description && (
+                    <p className={`text-sm mt-1 ${task.completed ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {task.description}
+                    </p>
+                  )}
+                  
+                  <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                    <span>Timers: {getTimerCount(task.id)}</span>
+                    <span>Created: {task.createdAt.toLocaleDateString()}</span>
+                    {selectedTaskId === task.id && (
+                      <span className="text-blue-600 font-medium">Active</span>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2 ml-2">
+                  <button
+                    onClick={() => startEditing(task)}
+                    className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-xs"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => onDeleteTask(task.id)}
+                    className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* State Viewer */}
+      <div className="mt-6">
+        <button
+          onClick={() => setShowStateViewer(!showStateViewer)}
+          className="w-full p-2 bg-blue-100 hover:bg-blue-200 rounded-md text-sm font-medium text-blue-700"
+        >
+          {showStateViewer ? 'Hide State Viewer' : 'Show State Viewer'}
+        </button>
+        
+        {showStateViewer && (
+          <div className="mt-4 p-4 bg-gray-100 rounded-md">
+            <h4 className="font-medium text-gray-700 mb-2">Tasks State</h4>
+            <div className="text-xs font-mono space-y-1">
+              <div><strong>Total Tasks:</strong> {tasks.length}</div>
+              <div><strong>Completed:</strong> {tasks.filter(t => t.completed).length}</div>
+              <div><strong>Selected Task ID:</strong> {selectedTaskId || 'None'}</div>
+              <div><strong>Show Create Form:</strong> {showCreateForm.toString()}</div>
+              <div><strong>Editing Task ID:</strong> {editingTaskId || 'None'}</div>
+            </div>
+            
+            <h4 className="font-medium text-gray-700 mt-4 mb-2">Tasks Data</h4>
+            <div className="text-xs font-mono bg-white p-2 rounded max-h-40 overflow-y-auto">
+              <pre>{JSON.stringify(tasks, null, 2)}</pre>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Tasks;
