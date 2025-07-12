@@ -51,7 +51,66 @@ const Timer = () => {
         } else {
           setTimeLeft(prev => {
             if (prev <= 1) {
-              handleTimerComplete();
+              // Timer completed naturally
+              setIsRunning(false);
+              
+              // Complete current session
+              if (currentSession) {
+                const actualDuration = mode === 'stopwatch' ? currentTime + 1 : currentSession.plannedDuration;
+                
+                const completedSession = {
+                  ...currentSession,
+                  endTime: new Date(),
+                  completed: true,
+                  actualDuration: actualDuration
+                };
+                setTimerHistory(prev => [...prev, completedSession]);
+                setCurrentSession(null);
+              }
+              
+              // Handle pomodoro phase transitions
+              if (mode === 'pomodoro') {
+                let nextPhase;
+                let shouldAutoStart = false;
+                
+                if (pomodoroPhase === 'work') {
+                  const newCount = pomodoroCount + 1;
+                  setPomodoroCount(newCount);
+                  
+                  if (newCount % settings.longBreakInterval === 0) {
+                    nextPhase = 'longBreak';
+                  } else {
+                    nextPhase = 'shortBreak';
+                  }
+                  shouldAutoStart = settings.autoStartBreaks;
+                } else {
+                  nextPhase = 'work';
+                  shouldAutoStart = settings.autoStartWork;
+                }
+                
+                setPomodoroPhase(nextPhase);
+                
+                // Reset timer for next phase and auto-start if enabled
+                setTimeout(() => {
+                  const nextPhaseDuration = getPomodoroPhaseTime(nextPhase);
+                  setTimeLeft(nextPhaseDuration * 60);
+                  
+                  if (shouldAutoStart) {
+                    setIsRunning(true);
+                    startTimeRef.current = new Date();
+                    const newSession = {
+                      id: Date.now(),
+                      mode: 'pomodoro',
+                      phase: nextPhase,
+                      startTime: new Date(),
+                      plannedDuration: nextPhaseDuration * 60,
+                      completed: false
+                    };
+                    setCurrentSession(newSession);
+                  }
+                }, 100);
+              }
+              
               return 0;
             }
             return prev - 1;
@@ -63,7 +122,7 @@ const Timer = () => {
     }
     
     return () => clearInterval(intervalRef.current);
-  }, [isRunning, mode]);
+  }, [isRunning, mode, currentSession, pomodoroPhase, pomodoroCount, settings.longBreakInterval, settings.autoStartWork, settings.autoStartBreaks]);
   
   const getPomodoroPhaseTime = (phase) => {
     switch (phase) {
@@ -79,8 +138,7 @@ const Timer = () => {
     
     // Complete current session
     if (currentSession) {
-      const actualDuration = mode === 'stopwatch' ? currentTime : 
-        (currentSession.plannedDuration || 0) - timeLeft;
+      const actualDuration = mode === 'stopwatch' ? currentTime : currentSession.plannedDuration;
       
       const completedSession = {
         ...currentSession,
@@ -121,6 +179,7 @@ const Timer = () => {
         
         if (shouldAutoStart) {
           setIsRunning(true);
+          startTimeRef.current = new Date();
           const newSession = {
             id: Date.now(),
             mode: 'pomodoro',
@@ -161,7 +220,7 @@ const Timer = () => {
     // Mark current session based on mode
     if (currentSession) {
       const actualDuration = mode === 'stopwatch' ? currentTime : 
-        (currentSession.plannedDuration || 0) - timeLeft;
+        currentSession.plannedDuration - timeLeft;
       
       const sessionEnd = {
         ...currentSession,
@@ -188,7 +247,7 @@ const Timer = () => {
     // Complete current session when mode changes
     if (currentSession) {
       const actualDuration = mode === 'stopwatch' ? currentTime : 
-        (currentSession.plannedDuration || 0) - timeLeft;
+        currentSession.plannedDuration - timeLeft;
       
       const completedSession = {
         ...currentSession,
