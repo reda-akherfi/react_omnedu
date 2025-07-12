@@ -6,6 +6,7 @@ interface Project {
   description: string;
   createdAt: Date;
   updatedAt: Date;
+  completed: boolean;
 }
 
 interface ProjectsProps {
@@ -27,23 +28,24 @@ const Projects: React.FC<ProjectsProps> = ({
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: '', description: '', completed: false });
   const [showStateViewer, setShowStateViewer] = useState(false);
 
   const handleCreate = () => {
     if (formData.name.trim()) {
       onCreateProject({
         name: formData.name.trim(),
-        description: formData.description.trim()
+        description: formData.description.trim(),
+        completed: formData.completed
       });
-      setFormData({ name: '', description: '' });
+      setFormData({ name: '', description: '', completed: false });
       setShowCreateForm(false);
     }
   };
 
   const handleEdit = (project: Project) => {
     setEditingProjectId(project.id);
-    setFormData({ name: project.name, description: project.description });
+    setFormData({ name: project.name, description: project.description, completed: project.completed });
     setShowCreateForm(false);
   };
 
@@ -52,16 +54,17 @@ const Projects: React.FC<ProjectsProps> = ({
       onUpdateProject(editingProjectId, {
         name: formData.name.trim(),
         description: formData.description.trim(),
+        completed: formData.completed,
         updatedAt: new Date()
       });
       setEditingProjectId(null);
-      setFormData({ name: '', description: '' });
+      setFormData({ name: '', description: '', completed: false });
     }
   };
 
   const cancelEdit = () => {
     setEditingProjectId(null);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '', description: '', completed: false });
   };
 
   return (
@@ -72,7 +75,7 @@ const Projects: React.FC<ProjectsProps> = ({
           onClick={() => {
             setShowCreateForm(!showCreateForm);
             setEditingProjectId(null);
-            setFormData({ name: '', description: '' });
+            setFormData({ name: '', description: '', completed: false });
           }}
           className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-md text-sm font-medium"
         >
@@ -103,6 +106,18 @@ const Projects: React.FC<ProjectsProps> = ({
                 rows={2}
                 placeholder="Enter project description"
               />
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="completed"
+                checked={formData.completed}
+                onChange={e => setFormData({ ...formData, completed: e.target.checked })}
+                className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
+              />
+              <label htmlFor="completed" className="text-sm font-medium text-gray-700">
+                Mark as completed
+              </label>
             </div>
             <div className="flex space-x-2">
               <button
@@ -159,7 +174,14 @@ const Projects: React.FC<ProjectsProps> = ({
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <h3 className={`font-medium ${selectedProjectId === project.id ? 'text-purple-800' : 'text-gray-800'}`}>{project.name}</h3>
+                    <input
+                      type="checkbox"
+                      checked={project.completed}
+                      onChange={() => onUpdateProject(project.id, { completed: !project.completed, updatedAt: new Date() })}
+                      className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className={`font-medium ${project.completed ? 'line-through text-gray-400' : ''}`}>{project.name}</span>
+                    {project.completed && <span className="ml-2 text-xs text-green-600 font-semibold">Completed</span>}
                   </div>
                   {project.description && (
                     <p className="text-sm mt-1 text-gray-600">{project.description}</p>

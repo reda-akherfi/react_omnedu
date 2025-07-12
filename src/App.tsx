@@ -15,6 +15,7 @@ interface Project {
   description: string;
   createdAt: Date;
   updatedAt: Date;
+  completed: boolean;
 }
 
 interface Task {
@@ -53,12 +54,13 @@ const App: React.FC = () => {
   const [showGlobalStateViewer, setShowGlobalStateViewer] = useState<boolean>(false);
 
   // Project CRUD operations
-  const createProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const createProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
     const newProject: Project = {
       ...projectData,
       id: Date.now(),
       createdAt: new Date(),
       updatedAt: new Date(),
+      completed: false
     };
     setProjects(prev => [...prev, newProject]);
     // Auto-select first project if none selected
