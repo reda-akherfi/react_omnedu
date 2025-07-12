@@ -99,58 +99,63 @@ const Projects: React.FC<ProjectsProps> = ({
         </button>
       </div>
 
-      {/* Create/Edit Form */}
+      {/* Create/Edit Modal */}
       {(showCreateForm || editingProjectId) && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-md">
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="Enter project name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                value={formData.description}
-                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                rows={2}
-                placeholder="Enter project description"
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="completed"
-                checked={formData.completed}
-                onChange={e => setFormData({ ...formData, completed: e.target.checked })}
-                className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
-              />
-              <label htmlFor="completed" className="text-sm font-medium text-gray-700">
-                Mark as completed
-              </label>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={editingProjectId ? handleUpdate : handleCreate}
-                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium"
-              >
-                {editingProjectId ? 'Update' : 'Create'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowCreateForm(false);
-                  cancelEdit();
-                }}
-                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
-              >
-                Cancel
-              </button>
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {editingProjectId ? 'Edit Project' : 'New Project'}
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Enter project name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  rows={2}
+                  placeholder="Enter project description"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="completed"
+                  checked={formData.completed}
+                  onChange={e => setFormData({ ...formData, completed: e.target.checked })}
+                  className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
+                />
+                <label htmlFor="completed" className="text-sm font-medium text-gray-700">
+                  Mark as completed
+                </label>
+              </div>
+              <div className="flex space-x-2 mt-4">
+                <button
+                  onClick={editingProjectId ? handleUpdate : handleCreate}
+                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium"
+                >
+                  {editingProjectId ? 'Update' : 'Create'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    cancelEdit();
+                  }}
+                  className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

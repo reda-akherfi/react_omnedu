@@ -134,73 +134,88 @@ const Tasks: React.FC<TasksProps> = ({
           </button>
         </div>
 
-        {/* Create/Edit Form */}
+        {/* Create/Edit Modal */}
         {(showCreateForm || editingTaskId) && (
           !currentProjectId ? (
-            <div className="mb-4 p-4 bg-yellow-100 rounded-md text-yellow-800 text-sm">
-              You must select a project to create a task.
+            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+              <div className="bg-yellow-100 border border-yellow-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full text-yellow-800 text-sm">
+                You must select a project to create a task.
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={() => {
+                      setShowCreateForm(false);
+                      cancelEditing();
+                    }}
+                    className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
-          <div className="mb-4 p-4 bg-gray-50 rounded-md">
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter task title"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                  placeholder="Enter task description"
-                />
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="completed"
-                  checked={formData.completed}
-                  onChange={(e) => setFormData({ ...formData, completed: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label htmlFor="completed" className="text-sm font-medium text-gray-700">
-                  Mark as completed
-                </label>
-              </div>
-              
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => editingTaskId ? handleUpdateTask(editingTaskId) : handleCreateTask()}
-                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium"
-                >
-                  {editingTaskId ? 'Update' : 'Create'}
-                </button>
-                <button
-                  onClick={() => {
-                    setShowCreateForm(false);
-                    cancelEditing();
-                  }}
-                  className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
-                >
-                  Cancel
-                </button>
+            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+              <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {editingTaskId ? 'Edit Task' : 'New Task'}
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter task title"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={3}
+                      placeholder="Enter task description"
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="completed"
+                      checked={formData.completed}
+                      onChange={(e) => setFormData({ ...formData, completed: e.target.checked })}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="completed" className="text-sm font-medium text-gray-700">
+                      Mark as completed
+                    </label>
+                  </div>
+                  <div className="flex space-x-2 mt-4">
+                    <button
+                      onClick={() => editingTaskId ? handleUpdateTask(editingTaskId) : handleCreateTask()}
+                      className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium"
+                    >
+                      {editingTaskId ? 'Update' : 'Create'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCreateForm(false);
+                        cancelEditing();
+                      }}
+                      className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
           )
         )}
 
