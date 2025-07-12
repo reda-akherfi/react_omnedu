@@ -34,6 +34,7 @@ const Tasks: React.FC<TasksProps> = ({
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [showStateViewer, setShowStateViewer] = useState<boolean>(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -96,6 +97,21 @@ const Tasks: React.FC<TasksProps> = ({
   const getTimerCount = (taskId: number): number => {
     const task = tasks.find(t => t.id === taskId);
     return task ? task.timerIds.length : 0;
+  };
+
+  const handleDeleteClick = (task: Task) => {
+    setTaskToDelete(task);
+  };
+
+  const confirmDelete = () => {
+    if (taskToDelete) {
+      onDeleteTask(taskToDelete.id);
+      setTaskToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setTaskToDelete(null);
   };
 
   // Only show tasks for the current project
@@ -261,7 +277,7 @@ const Tasks: React.FC<TasksProps> = ({
                     Edit
                   </button>
                   <button
-                    onClick={() => onDeleteTask(task.id)}
+                    onClick={() => handleDeleteClick(task)}
                     className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs"
                   >
                     Delete
@@ -272,6 +288,35 @@ const Tasks: React.FC<TasksProps> = ({
           ))
         )}
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      {taskToDelete && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Task</h3>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete the task "<strong>{taskToDelete.title}</strong>"?
+            </p>
+            <p className="text-sm text-red-600 mb-6">
+              This will also delete all timer sessions associated with this task. This action cannot be undone.
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium"
+              >
+                Delete Task
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* State Viewer */}
       <div className="mt-6">

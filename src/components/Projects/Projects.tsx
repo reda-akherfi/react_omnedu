@@ -30,6 +30,7 @@ const Projects: React.FC<ProjectsProps> = ({
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ name: '', description: '', completed: false });
   const [showStateViewer, setShowStateViewer] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
 
   const handleCreate = () => {
     if (formData.name.trim()) {
@@ -65,6 +66,21 @@ const Projects: React.FC<ProjectsProps> = ({
   const cancelEdit = () => {
     setEditingProjectId(null);
     setFormData({ name: '', description: '', completed: false });
+  };
+
+  const handleDeleteClick = (project: Project) => {
+    setProjectToDelete(project);
+  };
+
+  const confirmDelete = () => {
+    if (projectToDelete) {
+      onDeleteProject(projectToDelete.id);
+      setProjectToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setProjectToDelete(null);
   };
 
   return (
@@ -201,7 +217,7 @@ const Projects: React.FC<ProjectsProps> = ({
                     Edit
                   </button>
                   <button
-                    onClick={() => onDeleteProject(project.id)}
+                    onClick={() => handleDeleteClick(project)}
                     className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs"
                   >
                     Delete
@@ -235,6 +251,35 @@ const Projects: React.FC<ProjectsProps> = ({
           </div>
         )}
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      {projectToDelete && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Project</h3>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete the project "<strong>{projectToDelete.name}</strong>"?
+            </p>
+            <p className="text-sm text-red-600 mb-6">
+              This will also delete all tasks associated with this project. This action cannot be undone.
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium"
+              >
+                Delete Project
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
