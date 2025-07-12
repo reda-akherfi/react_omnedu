@@ -119,11 +119,12 @@ const Timer: React.FC<TimerProps> = ({
         <select 
           value={mode} 
           onChange={(e) => onModeChange(e.target.value as 'pomodoro' | 'countdown' | 'stopwatch')}
+          disabled={!selectedTaskId}
           className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
             darkMode 
               ? 'bg-gray-700 border-gray-600 text-gray-100' 
               : 'border-gray-300 text-gray-900'
-          }`}
+          } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <option value="pomodoro">Pomodoro</option>
           <option value="countdown">Countdown</option>
@@ -156,18 +157,22 @@ const Timer: React.FC<TimerProps> = ({
       <div className="flex justify-center space-x-4 mb-6">
         <button
           onClick={isRunning ? onPauseTimer : onStartTimer}
-          className={`px-6 py-2 rounded-md font-medium ${
+          disabled={!selectedTaskId}
+          className={`px-6 py-2 rounded-md font-medium transition-colors duration-200 ${
             isRunning 
               ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
               : 'bg-green-500 hover:bg-green-600 text-white'
-          }`}
+          } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isRunning ? 'Pause' : 'Start'}
         </button>
         
         <button
           onClick={onResetTimer}
-          className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium"
+          disabled={!selectedTaskId}
+          className={`px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium transition-colors duration-200 ${
+            !selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         >
           Reset
         </button>
@@ -183,11 +188,12 @@ const Timer: React.FC<TimerProps> = ({
               type="number"
               value={customCountdown / 60}
               onChange={(e) => onSetCustomCountdown(parseInt(e.target.value) * 60)}
+              disabled={!selectedTaskId}
               className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
                 darkMode 
                   ? 'bg-gray-700 border-gray-600 text-gray-100' 
                   : 'border-gray-300 text-gray-900'
-              }`}
+              } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
               min="1"
               max="999"
             />
@@ -198,9 +204,10 @@ const Timer: React.FC<TimerProps> = ({
           <div>
             <button
               onClick={() => onSetShowSettings(!showSettings)}
+              disabled={!selectedTaskId}
               className={`w-full p-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                 darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-              }`}
+              } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {showSettings ? 'Hide Settings' : 'Show Settings'}
             </button>
@@ -217,11 +224,12 @@ const Timer: React.FC<TimerProps> = ({
                     type="number"
                     value={settings.workDuration}
                     onChange={(e) => onUpdateSettings('workDuration', e.target.value)}
+                    disabled={!selectedTaskId}
                     className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
                       darkMode 
                         ? 'bg-gray-600 border-gray-500 text-gray-100' 
                         : 'border-gray-300 text-gray-900'
-                    }`}
+                    } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
                     min="1"
                     max="120"
                   />
@@ -235,11 +243,12 @@ const Timer: React.FC<TimerProps> = ({
                     type="number"
                     value={settings.shortBreakDuration}
                     onChange={(e) => onUpdateSettings('shortBreakDuration', e.target.value)}
+                    disabled={!selectedTaskId}
                     className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
                       darkMode 
                         ? 'bg-gray-600 border-gray-500 text-gray-100' 
                         : 'border-gray-300 text-gray-900'
-                    }`}
+                    } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
                     min="1"
                     max="60"
                   />
@@ -253,11 +262,12 @@ const Timer: React.FC<TimerProps> = ({
                     type="number"
                     value={settings.longBreakDuration}
                     onChange={(e) => onUpdateSettings('longBreakDuration', e.target.value)}
+                    disabled={!selectedTaskId}
                     className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
                       darkMode 
                         ? 'bg-gray-600 border-gray-500 text-gray-100' 
                         : 'border-gray-300 text-gray-900'
-                    }`}
+                    } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
                     min="1"
                     max="120"
                   />
@@ -271,11 +281,12 @@ const Timer: React.FC<TimerProps> = ({
                     type="number"
                     value={settings.longBreakInterval}
                     onChange={(e) => onUpdateSettings('longBreakInterval', e.target.value)}
+                    disabled={!selectedTaskId}
                     className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${
                       darkMode 
                         ? 'bg-gray-600 border-gray-500 text-gray-100' 
                         : 'border-gray-300 text-gray-900'
-                    }`}
+                    } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
                     min="2"
                     max="10"
                   />
@@ -287,7 +298,10 @@ const Timer: React.FC<TimerProps> = ({
                     id="autoStartWork"
                     checked={settings.autoStartWork}
                     onChange={(e) => onUpdateSettings('autoStartWork', e.target.checked)}
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    disabled={!selectedTaskId}
+                    className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ${
+                      !selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   />
                   <label htmlFor="autoStartWork" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Auto-start work sessions
@@ -300,7 +314,10 @@ const Timer: React.FC<TimerProps> = ({
                     id="autoStartBreaks"
                     checked={settings.autoStartBreaks}
                     onChange={(e) => onUpdateSettings('autoStartBreaks', e.target.checked)}
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    disabled={!selectedTaskId}
+                    className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ${
+                      !selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   />
                   <label htmlFor="autoStartBreaks" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Auto-start break sessions

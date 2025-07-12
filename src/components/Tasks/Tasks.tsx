@@ -194,7 +194,10 @@ const Tasks: React.FC<TasksProps> = ({
               setEditingTaskId(null);
               setFormData({ title: '', description: '', completed: false });
             }}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium"
+            disabled={!currentProjectId}
+            className={`px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors duration-200 ${
+              !currentProjectId ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             {showCreateForm ? 'Cancel' : 'New Task'}
           </button>
@@ -314,7 +317,15 @@ const Tasks: React.FC<TasksProps> = ({
 
       {/* Tasks List */}
       <div className="space-y-3">
-        {filteredTasks.length === 0 ? (
+        {!currentProjectId ? (
+          <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <p className="font-medium">No Project Selected</p>
+            <p className="text-sm">Please select a project first to view and manage tasks</p>
+          </div>
+        ) : filteredTasks.length === 0 ? (
           <p className={`text-center py-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>No tasks yet for this project. Create your first task!</p>
         ) : (
           filteredTasks.map(task => (
