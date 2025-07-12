@@ -15,7 +15,9 @@ const Timer = () => {
     workDuration: 25,
     shortBreakDuration: 5,
     longBreakDuration: 15,
-    longBreakInterval: 4
+    longBreakInterval: 4,
+    autoStartWork: false,
+    autoStartBreaks: false
   });
   
   // Timer tracking for statistics
@@ -77,11 +79,14 @@ const Timer = () => {
     
     // Complete current session
     if (currentSession) {
+      const actualDuration = mode === 'stopwatch' ? currentTime : 
+        (currentSession.plannedDuration || 0) - timeLeft;
+      
       const completedSession = {
         ...currentSession,
         endTime: new Date(),
         completed: true,
-        actualDuration: mode === 'stopwatch' ? currentTime : currentSession.plannedDuration - timeLeft
+        actualDuration: actualDuration
       };
       setTimerHistory(prev => [...prev, completedSession]);
       setCurrentSession(null);
@@ -89,26 +94,44 @@ const Timer = () => {
     
     // Auto-advance pomodoro phases
     if (mode === 'pomodoro') {
+      let nextPhase;
+      let shouldAutoStart = false;
+      
       if (pomodoroPhase === 'work') {
         const newCount = pomodoroCount + 1;
         setPomodoroCount(newCount);
         
         if (newCount % settings.longBreakInterval === 0) {
-          setPomodoroPhase('longBreak');
+          nextPhase = 'longBreak';
         } else {
-          setPomodoroPhase('shortBreak');
+          nextPhase = 'shortBreak';
         }
+        shouldAutoStart = settings.autoStartBreaks;
       } else {
-        setPomodoroPhase('work');
+        nextPhase = 'work';
+        shouldAutoStart = settings.autoStartWork;
       }
       
-      // Reset timer for next phase
+      setPomodoroPhase(nextPhase);
+      
+      // Reset timer for next phase and auto-start if enabled
       setTimeout(() => {
-        const nextPhaseDuration = getPomodoroPhaseTime(pomodoroPhase === 'work' ? 
-          (pomodoroCount % settings.longBreakInterval === 0 ? 'longBreak' : 'shortBreak') : 
-          'work');
+        const nextPhaseDuration = getPomodoroPhaseTime(nextPhase);
         setTimeLeft(nextPhaseDuration * 60);
-      }, 0);
+        
+        if (shouldAutoStart) {
+          setIsRunning(true);
+          const newSession = {
+            id: Date.now(),
+            mode: 'pomodoro',
+            phase: nextPhase,
+            startTime: new Date(),
+            plannedDuration: nextPhaseDuration * 60,
+            completed: false
+          };
+          setCurrentSession(newSession);
+        }
+      }, 100);
     }
   };
   
@@ -137,11 +160,14 @@ const Timer = () => {
     
     // Mark current session based on mode
     if (currentSession) {
+      const actualDuration = mode === 'stopwatch' ? currentTime : 
+        (currentSession.plannedDuration || 0) - timeLeft;
+      
       const sessionEnd = {
         ...currentSession,
         endTime: new Date(),
         completed: mode === 'stopwatch' ? true : false, // Stopwatch reset = complete
-        actualDuration: mode === 'stopwatch' ? currentTime : currentSession.plannedDuration - timeLeft,
+        actualDuration: actualDuration,
         reason: 'reset'
       };
       setTimerHistory(prev => [...prev, sessionEnd]);
@@ -161,11 +187,14 @@ const Timer = () => {
   const handleModeChange = (newMode) => {
     // Complete current session when mode changes
     if (currentSession) {
+      const actualDuration = mode === 'stopwatch' ? currentTime : 
+        (currentSession.plannedDuration || 0) - timeLeft;
+      
       const completedSession = {
         ...currentSession,
         endTime: new Date(),
         completed: false,
-        actualDuration: mode === 'stopwatch' ? currentTime : currentSession.plannedDuration - timeLeft,
+        actualDuration: actualDuration,
         reason: 'mode_changed'
       };
       setTimerHistory(prev => [...prev, completedSession]);
@@ -188,7 +217,11 @@ const Timer = () => {
   };
   
   const updateSettings = (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: parseInt(value) }));
+    if (key === 'autoStartWork' || key === 'autoStartBreaks') {
+      setSettings(prev => ({ ...prev, [key]: value }));
+    } else {
+      setSettings(prev => ({ ...prev, [key]: parseInt(value) }));
+    }
   };
   
   const getDisplayTime = () => {
@@ -360,6 +393,32 @@ const Timer = () => {
                     min="2"
                     max="10"
                   />
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="autoStartWork"
+                    checked={settings.autoStartWork}
+                    onChange={(e) => updateSettings('autoStartWork', e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="autoStartWork" className="text-sm font-medium text-gray-700">
+                    Auto-start work sessions
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="autoStartBreaks"
+                    checked={settings.autoStartBreaks}
+                    onChange={(e) => updateSettings('autoStartBreaks', e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="autoStartBreaks" className="text-sm font-medium text-gray-700">
+                    Auto-start break sessions
+                  </label>
                 </div>
               </div>
             )}
