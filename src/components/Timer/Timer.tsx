@@ -62,6 +62,7 @@ const Timer: React.FC = () => {
   
   // Initialize timer based on mode
   useEffect(() => {
+    if (!isRunning) {
     if (mode === 'pomodoro') {
       const duration = getPomodoroPhaseTime(pomodoroPhase);
       setTimeLeft(duration * 60);
@@ -70,6 +71,7 @@ const Timer: React.FC = () => {
     } else if (mode === 'stopwatch') {
       setCurrentTime(0);
     }
+}
   }, [mode, pomodoroPhase, customCountdown, settings]);
   
   // Timer logic
