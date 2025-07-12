@@ -105,7 +105,7 @@ const App: React.FC = () => {
               ...rel,
               timerIds: [...rel.timerIds, sessionId],
               totalSessions: rel.totalSessions + 1,
-              completedSessions: rel.completedSessions + 1,
+              completedSessions: rel.completedSessions + 1,  // Fixed this line
               lastSessionDate: new Date()
             }
           : rel

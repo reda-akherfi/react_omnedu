@@ -42,6 +42,59 @@ const Timer: React.FC<TimerProps> = ({
   const [pomodoroCount, setPomodoroCount] = useState<number>(0);
   const [customCountdown, setCustomCountdown] = useState<number>(10 * 60); // 10 minutes default
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  // Track previous task ID to detect changes
+  const prevTaskIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    // Check if task has changed
+    if (selectedTaskId !== prevTaskIdRef.current && prevTaskIdRef.current !== null) {
+      // Task has changed - handle the switch
+      handleTaskSwitch();
+    }
+    prevTaskIdRef.current = selectedTaskId;
+  }, [selectedTaskId]);
+  
+
+const handleTaskSwitch = () => {
+    if (isRunning && currentSession) {
+      // Complete current session for previous task
+      const actualDuration = mode === 'stopwatch' 
+        ? currentTime 
+        : (currentSession.plannedDuration ?? 0) - timeLeft;
+      
+      const completedSession: TimerSession = {
+        ...currentSession,
+        endTime: new Date(),
+        completed: false,
+        actualDuration: actualDuration,
+        reason: 'task_switched'
+      };
+      
+      // Add to history and notify parent about this session
+      addUniqueSessionToHistory(completedSession);
+      onTimerSessionComplete(completedSession.id, completedSession.taskId);
+  
+      // Start new session with remaining time
+      if (mode !== 'stopwatch') {
+        const newSession: TimerSession = {
+          id: Date.now(),
+          taskId: selectedTaskId,
+          mode,
+          phase: mode === 'pomodoro' ? pomodoroPhase : null,
+          startTime: new Date(),
+          plannedDuration: timeLeft, // Continue with remaining time
+          completed: false
+        };
+        setCurrentSession(newSession);
+        startTimeRef.current = new Date();
+      }
+    } else if (currentSession) {
+      // Just update the task ID if timer isn't running
+      setCurrentSession({
+        ...currentSession,
+        taskId: selectedTaskId
+      });
+    }
+  };
   
   // Settings state
   const [settings, setSettings] = useState<TimerSettings>({
@@ -191,6 +244,22 @@ const Timer: React.FC<TimerProps> = ({
   };
   
   const startTimer = () => {
+    // If we have an existing session with a different task, complete it first
+    if (currentSession && currentSession.taskId !== selectedTaskId) {
+      const actualDuration = mode === 'stopwatch' 
+        ? currentTime 
+        : (currentSession.plannedDuration ?? 0) - timeLeft;
+      
+      const completedSession: TimerSession = {
+        ...currentSession,
+        endTime: new Date(),
+        completed: false,
+        actualDuration: actualDuration,
+        reason: 'task_changed_before_start'
+      };
+      addUniqueSessionToHistory(completedSession);
+    }
+  
     setIsRunning(true);
     startTimeRef.current = new Date();
     
@@ -242,7 +311,9 @@ const Timer: React.FC<TimerProps> = ({
   const handleModeChange = (newMode: 'pomodoro' | 'countdown' | 'stopwatch') => {
     // Complete current session when mode changes
     if (currentSession) {
-      const actualDuration = mode === 'stopwatch' ? currentTime : (currentSession.plannedDuration ?? 0) - timeLeft;
+      const actualDuration = mode === 'stopwatch' 
+        ? currentTime 
+        : (currentSession.plannedDuration ?? 0) - timeLeft;
       
       const completedSession: TimerSession = {
         ...currentSession,
