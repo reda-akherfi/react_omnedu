@@ -3,6 +3,7 @@
 
 export interface Project {
   id: number;
+  userId: number;
   name: string;
   description: string;
   createdAt: Date;
@@ -12,6 +13,7 @@ export interface Project {
 
 export interface Task {
   id: number;
+  userId: number;
   projectId: number;
   title: string;
   description: string;
@@ -23,6 +25,7 @@ export interface Task {
 
 export interface TimerSession {
   id: number;
+  userId: number;
   taskId: number | null;
   mode: 'pomodoro' | 'countdown' | 'stopwatch';
   phase: 'work' | 'shortBreak' | 'longBreak' | null;
@@ -37,6 +40,7 @@ export interface TimerSession {
 export const exampleProjects: Project[] = [
   {
     id: 1,
+    userId: 1,
     name: 'Personal Productivity',
     description: 'Tasks to improve my daily productivity and time management.',
     createdAt: new Date('2024-01-01T09:00:00'),
@@ -45,6 +49,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 2,
+    userId: 1,
     name: 'Work Project Alpha',
     description: 'Main work project with multiple deliverables and deadlines.',
     createdAt: new Date('2024-01-02T10:00:00'),
@@ -53,6 +58,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 3,
+    userId: 1,
     name: 'Learning & Development',
     description: 'Tasks for learning new skills and self-improvement.',
     createdAt: new Date('2024-01-03T11:00:00'),
@@ -61,6 +67,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 4,
+    userId: 1,
     name: 'Home Organization',
     description: 'Tasks to organize and maintain the home environment.',
     createdAt: new Date('2024-01-04T12:00:00'),
@@ -69,6 +76,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 5,
+    userId: 1,
     name: 'Health & Fitness',
     description: 'Tasks related to physical health and exercise routines.',
     createdAt: new Date('2024-01-05T13:00:00'),
@@ -77,6 +85,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 6,
+    userId: 1,
     name: 'Financial Planning',
     description: 'Tasks for budgeting, saving, and financial management.',
     createdAt: new Date('2024-01-06T14:00:00'),
@@ -85,6 +94,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 7,
+    userId: 1,
     name: 'Creative Writing',
     description: 'Writing projects including blog posts, stories, and content creation.',
     createdAt: new Date('2024-01-07T15:00:00'),
@@ -93,6 +103,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 8,
+    userId: 1,
     name: 'Side Business',
     description: 'Tasks for developing and managing a side business venture.',
     createdAt: new Date('2024-01-08T16:00:00'),
@@ -101,6 +112,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 9,
+    userId: 1,
     name: 'Travel Planning',
     description: 'Tasks for planning upcoming trips and vacations.',
     createdAt: new Date('2024-01-09T17:00:00'),
@@ -109,6 +121,7 @@ export const exampleProjects: Project[] = [
   },
   {
     id: 10,
+    userId: 1,
     name: 'Completed Project',
     description: 'A project that has been completed successfully.',
     createdAt: new Date('2024-01-10T18:00:00'),
@@ -121,6 +134,7 @@ export const exampleTasks: Task[] = [
   // Personal Productivity Tasks
   {
     id: 101,
+    userId: 1,
     projectId: 1,
     title: 'Morning Routine',
     description: 'Complete my morning routine checklist including meditation and planning.',
@@ -131,6 +145,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 102,
+    userId: 1,
     projectId: 1,
     title: 'Plan Day',
     description: 'Review calendar and plan today\'s tasks and priorities.',
@@ -141,6 +156,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 103,
+    userId: 1,
     projectId: 1,
     title: 'Time Audit',
     description: 'Track how I spend my time for one week to identify inefficiencies.',
@@ -151,6 +167,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 104,
+    userId: 1,
     projectId: 1,
     title: 'Declutter Workspace',
     description: 'Organize and declutter my physical and digital workspace.',
@@ -163,6 +180,7 @@ export const exampleTasks: Task[] = [
   // Work Project Alpha Tasks
   {
     id: 201,
+    userId: 1,
     projectId: 2,
     title: 'Write Status Report',
     description: 'Draft the weekly status report for the Alpha project.',
@@ -173,6 +191,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 202,
+    userId: 1,
     projectId: 2,
     title: 'Team Meeting',
     description: 'Attend the Monday team sync and take notes.',
@@ -183,6 +202,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 203,
+    userId: 1,
     projectId: 2,
     title: 'Code Review',
     description: 'Review pull requests and provide feedback to team members.',
@@ -193,6 +213,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 204,
+    userId: 1,
     projectId: 2,
     title: 'Bug Fix',
     description: 'Fix the critical bug in the authentication module.',
@@ -203,6 +224,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 205,
+    userId: 1,
     projectId: 2,
     title: 'Documentation Update',
     description: 'Update the API documentation with new endpoints.',
@@ -215,6 +237,7 @@ export const exampleTasks: Task[] = [
   // Learning & Development Tasks
   {
     id: 301,
+    userId: 1,
     projectId: 3,
     title: 'Read Technical Book',
     description: 'Read 20 pages of "Clean Code" by Robert Martin.',
@@ -225,6 +248,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 302,
+    userId: 1,
     projectId: 3,
     title: 'Online Course',
     description: 'Complete Module 3 of the React Advanced Patterns course.',
@@ -235,6 +259,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 303,
+    userId: 1,
     projectId: 3,
     title: 'Practice Coding',
     description: 'Solve 3 algorithm problems on LeetCode.',
@@ -245,6 +270,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 304,
+    userId: 1,
     projectId: 3,
     title: 'Watch Tutorial',
     description: 'Watch the TypeScript advanced features tutorial.',
@@ -257,6 +283,7 @@ export const exampleTasks: Task[] = [
   // Home Organization Tasks
   {
     id: 401,
+    userId: 1,
     projectId: 4,
     title: 'Clean Kitchen',
     description: 'Deep clean the kitchen including appliances and cabinets.',
@@ -267,6 +294,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 402,
+    userId: 1,
     projectId: 4,
     title: 'Organize Closet',
     description: 'Sort and organize clothes by season and type.',
@@ -277,6 +305,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 403,
+    userId: 1,
     projectId: 4,
     title: 'Declutter Garage',
     description: 'Remove unnecessary items and organize tools and equipment.',
@@ -289,6 +318,7 @@ export const exampleTasks: Task[] = [
   // Health & Fitness Tasks
   {
     id: 501,
+    userId: 1,
     projectId: 5,
     title: 'Morning Workout',
     description: 'Complete 30-minute cardio and strength training routine.',
@@ -299,6 +329,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 502,
+    userId: 1,
     projectId: 5,
     title: 'Meal Prep',
     description: 'Prepare healthy meals for the week ahead.',
@@ -309,6 +340,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 503,
+    userId: 1,
     projectId: 5,
     title: 'Yoga Session',
     description: 'Complete a 45-minute yoga session for flexibility.',
@@ -321,6 +353,7 @@ export const exampleTasks: Task[] = [
   // Financial Planning Tasks
   {
     id: 601,
+    userId: 1,
     projectId: 6,
     title: 'Budget Review',
     description: 'Review monthly expenses and adjust budget categories.',
@@ -331,6 +364,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 602,
+    userId: 1,
     projectId: 6,
     title: 'Investment Research',
     description: 'Research new investment opportunities and update portfolio.',
@@ -343,6 +377,7 @@ export const exampleTasks: Task[] = [
   // Creative Writing Tasks
   {
     id: 701,
+    userId: 1,
     projectId: 7,
     title: 'Blog Post Draft',
     description: 'Write a 1000-word blog post about productivity tips.',
@@ -353,6 +388,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 702,
+    userId: 1,
     projectId: 7,
     title: 'Short Story',
     description: 'Write the first chapter of a short story.',
@@ -365,6 +401,7 @@ export const exampleTasks: Task[] = [
   // Side Business Tasks
   {
     id: 801,
+    userId: 1,
     projectId: 8,
     title: 'Market Research',
     description: 'Research competitors and identify market opportunities.',
@@ -375,6 +412,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 802,
+    userId: 1,
     projectId: 8,
     title: 'Business Plan',
     description: 'Draft a comprehensive business plan for the side venture.',
@@ -387,6 +425,7 @@ export const exampleTasks: Task[] = [
   // Travel Planning Tasks
   {
     id: 901,
+    userId: 1,
     projectId: 9,
     title: 'Book Flights',
     description: 'Research and book flights for the summer vacation.',
@@ -397,6 +436,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 902,
+    userId: 1,
     projectId: 9,
     title: 'Hotel Research',
     description: 'Find and compare hotels in the destination city.',
@@ -409,6 +449,7 @@ export const exampleTasks: Task[] = [
   // Completed Project Tasks
   {
     id: 1001,
+    userId: 1,
     projectId: 10,
     title: 'Website Redesign',
     description: 'Complete the website redesign project.',
@@ -419,6 +460,7 @@ export const exampleTasks: Task[] = [
   },
   {
     id: 1002,
+    userId: 1,
     projectId: 10,
     title: 'Client Presentation',
     description: 'Prepare and deliver the final presentation to the client.',
@@ -433,6 +475,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Personal Productivity Sessions
   {
     id: 1001,
+    userId: 1,
     taskId: 101,
     mode: 'pomodoro',
     phase: 'work',
@@ -444,6 +487,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 1002,
+    userId: 1,
     taskId: 101,
     mode: 'pomodoro',
     phase: 'shortBreak',
@@ -455,6 +499,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 1003,
+    userId: 1,
     taskId: 102,
     mode: 'countdown',
     phase: null,
@@ -466,6 +511,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 1004,
+    userId: 1,
     taskId: 103,
     mode: 'stopwatch',
     phase: null,
@@ -477,6 +523,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 1005,
+    userId: 1,
     taskId: 103,
     mode: 'stopwatch',
     phase: null,
@@ -488,6 +535,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 1006,
+    userId: 1,
     taskId: 103,
     mode: 'stopwatch',
     phase: null,
@@ -502,6 +550,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Work Project Sessions
   {
     id: 2001,
+    userId: 1,
     taskId: 201,
     mode: 'pomodoro',
     phase: 'work',
@@ -513,6 +562,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 2002,
+    userId: 1,
     taskId: 201,
     mode: 'pomodoro',
     phase: 'shortBreak',
@@ -525,6 +575,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 2003,
+    userId: 1,
     taskId: 201,
     mode: 'pomodoro',
     phase: 'work',
@@ -536,6 +587,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 2004,
+    userId: 1,
     taskId: 202,
     mode: 'countdown',
     phase: null,
@@ -547,6 +599,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 2005,
+    userId: 1,
     taskId: 203,
     mode: 'pomodoro',
     phase: 'work',
@@ -559,6 +612,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 2006,
+    userId: 1,
     taskId: 204,
     mode: 'pomodoro',
     phase: 'work',
@@ -570,6 +624,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 2007,
+    userId: 1,
     taskId: 204,
     mode: 'pomodoro',
     phase: 'work',
@@ -581,6 +636,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 2008,
+    userId: 1,
     taskId: 205,
     mode: 'countdown',
     phase: null,
@@ -594,6 +650,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Learning Sessions
   {
     id: 3001,
+    userId: 1,
     taskId: 301,
     mode: 'pomodoro',
     phase: 'work',
@@ -605,6 +662,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 3002,
+    userId: 1,
     taskId: 301,
     mode: 'pomodoro',
     phase: 'work',
@@ -616,6 +674,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 3003,
+    userId: 1,
     taskId: 302,
     mode: 'countdown',
     phase: null,
@@ -628,6 +687,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 3004,
+    userId: 1,
     taskId: 303,
     mode: 'stopwatch',
     phase: null,
@@ -639,6 +699,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 3005,
+    userId: 1,
     taskId: 303,
     mode: 'stopwatch',
     phase: null,
@@ -652,6 +713,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Home Organization Sessions
   {
     id: 4001,
+    userId: 1,
     taskId: 401,
     mode: 'countdown',
     phase: null,
@@ -664,6 +726,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 4002,
+    userId: 1,
     taskId: 402,
     mode: 'pomodoro',
     phase: 'work',
@@ -675,6 +738,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 4003,
+    userId: 1,
     taskId: 402,
     mode: 'pomodoro',
     phase: 'work',
@@ -688,6 +752,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Health & Fitness Sessions
   {
     id: 5001,
+    userId: 1,
     taskId: 501,
     mode: 'countdown',
     phase: null,
@@ -699,6 +764,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 5002,
+    userId: 1,
     taskId: 501,
     mode: 'countdown',
     phase: null,
@@ -710,6 +776,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 5003,
+    userId: 1,
     taskId: 502,
     mode: 'pomodoro',
     phase: 'work',
@@ -722,6 +789,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 5004,
+    userId: 1,
     taskId: 503,
     mode: 'countdown',
     phase: null,
@@ -735,6 +803,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Financial Planning Sessions
   {
     id: 6001,
+    userId: 1,
     taskId: 601,
     mode: 'pomodoro',
     phase: 'work',
@@ -746,6 +815,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 6002,
+    userId: 1,
     taskId: 602,
     mode: 'countdown',
     phase: null,
@@ -757,6 +827,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 6003,
+    userId: 1,
     taskId: 602,
     mode: 'countdown',
     phase: null,
@@ -771,6 +842,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Creative Writing Sessions
   {
     id: 7001,
+    userId: 1,
     taskId: 701,
     mode: 'pomodoro',
     phase: 'work',
@@ -782,6 +854,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 7002,
+    userId: 1,
     taskId: 701,
     mode: 'pomodoro',
     phase: 'work',
@@ -793,6 +866,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 7003,
+    userId: 1,
     taskId: 702,
     mode: 'stopwatch',
     phase: null,
@@ -806,6 +880,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Side Business Sessions
   {
     id: 8001,
+    userId: 1,
     taskId: 801,
     mode: 'countdown',
     phase: null,
@@ -817,6 +892,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 8002,
+    userId: 1,
     taskId: 802,
     mode: 'pomodoro',
     phase: 'work',
@@ -828,6 +904,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 8003,
+    userId: 1,
     taskId: 802,
     mode: 'pomodoro',
     phase: 'work',
@@ -842,6 +919,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Travel Planning Sessions
   {
     id: 9001,
+    userId: 1,
     taskId: 901,
     mode: 'countdown',
     phase: null,
@@ -853,6 +931,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 9002,
+    userId: 1,
     taskId: 902,
     mode: 'pomodoro',
     phase: 'work',
@@ -866,6 +945,7 @@ export const exampleTimerSessions: TimerSession[] = [
   // Completed Project Sessions
   {
     id: 10001,
+    userId: 1,
     taskId: 1001,
     mode: 'pomodoro',
     phase: 'work',
@@ -877,6 +957,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 10002,
+    userId: 1,
     taskId: 1001,
     mode: 'pomodoro',
     phase: 'work',
@@ -888,6 +969,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 10003,
+    userId: 1,
     taskId: 1001,
     mode: 'pomodoro',
     phase: 'work',
@@ -899,6 +981,7 @@ export const exampleTimerSessions: TimerSession[] = [
   },
   {
     id: 10004,
+    userId: 1,
     taskId: 1002,
     mode: 'countdown',
     phase: null,

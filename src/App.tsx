@@ -17,6 +17,7 @@ interface Project {
   createdAt: Date;
   updatedAt: Date;
   completed: boolean;
+  userId: number; // Added userId
 }
 
 interface Task {
@@ -28,6 +29,7 @@ interface Task {
   createdAt: Date;
   updatedAt: Date;
   timerIds: number[];
+  userId: number; // Added userId
 }
 
 
@@ -44,6 +46,7 @@ interface TimerSession {
   endTime?: Date;
   actualDuration?: number;
   reason?: string;
+  userId: number; // Added userId
 }
 
 interface TimerSettings {
@@ -186,6 +189,8 @@ const App: React.FC = () => {
   // Sidebar navigation state
   const [activeSidebarItem, setActiveSidebarItem] = useState<'main' | 'statistics'>('main');
   
+  const { user, logout, setUser } = useAuth();
+
   // Projects state
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
@@ -193,9 +198,7 @@ const App: React.FC = () => {
   // Tasks state
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
-  
 
-  
   // Timer state (moved from Timer component)
   const [timerMode, setTimerMode] = useState<'pomodoro' | 'countdown' | 'stopwatch'>('pomodoro');
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
@@ -270,6 +273,7 @@ const App: React.FC = () => {
       if (timerMode !== 'stopwatch') {
         const newSession: TimerSession = {
           id: Date.now(),
+          userId: user?.id ?? 0,
           taskId: selectedTaskId,
           mode: timerMode,
           phase: timerMode === 'pomodoro' ? pomodoroPhase : null,
@@ -364,6 +368,7 @@ const App: React.FC = () => {
                     startTimeRef.current = new Date();
                     const newSession: TimerSession = {
                       id: Date.now(),
+                      userId: user?.id ?? 0,
                       taskId: selectedTaskId,
                       mode: 'pomodoro',
                       phase: nextPhase,
@@ -413,6 +418,7 @@ const App: React.FC = () => {
     
     const newSession: TimerSession = {
       id: Date.now(),
+      userId: user?.id ?? 0,
       taskId: selectedTaskId,
       mode: timerMode,
       phase: timerMode === 'pomodoro' ? pomodoroPhase : null,
@@ -505,6 +511,7 @@ const App: React.FC = () => {
         startTimeRef.current = new Date();
         const newSession: TimerSession = {
           id: Date.now(),
+          userId: user?.id ?? 0,
           taskId: selectedTaskId,
           mode: 'pomodoro',
           phase: nextPhase,
@@ -605,16 +612,17 @@ const App: React.FC = () => {
   };
 
   // Project CRUD operations
-  const createProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
+  const createProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'completed' | 'userId'>) => {
+    if (!user) return;
     const newProject: Project = {
       ...projectData,
       id: Date.now(),
+      userId: user.id,
       createdAt: new Date(),
       updatedAt: new Date(),
       completed: false
     };
     setProjects(prev => [...prev, newProject]);
-    // Auto-select first project if none selected
     if (!selectedProjectId) setSelectedProjectId(newProject.id);
   };
 
@@ -646,17 +654,17 @@ const App: React.FC = () => {
   };
 
   // Task CRUD operations
-  const createTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timerIds'>) => {
-    if (!taskData.projectId) return;
+  const createTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timerIds' | 'userId'>) => {
+    if (!user || !taskData.projectId) return;
     const newTask: Task = {
       ...taskData,
       id: Date.now(),
+      userId: user.id,
       createdAt: new Date(),
       updatedAt: new Date(),
       timerIds: []
     };
     setTasks(prev => [...prev, newTask]);
-
   };
 
   const updateTask = (taskId: number, updates: Partial<Task>) => {
@@ -684,8 +692,8 @@ const App: React.FC = () => {
 
   // Timer session completion handler
   const handleTimerSessionComplete = (sessionId: number, taskId: number | null) => {
+    if (!user) return;
     if (taskId) {
-      // Update task's timer IDs (only if not already present)
       setTasks(prev => prev.map(task => 
         task.id === taskId && !task.timerIds.includes(sessionId)
           ? { 
@@ -695,8 +703,6 @@ const App: React.FC = () => {
             }
           : task
       ));
-  
-
     }
   };
 
@@ -709,22 +715,17 @@ const App: React.FC = () => {
 
   const selectedTask = getSelectedTask();
 
-  // Load example data on first mount if state is empty
+  // Load example data for the current user on first mount or user change
   useEffect(() => {
-    if (projects.length === 0) {
-      setProjects(exampleProjects);
-      setSelectedProjectId(exampleProjects[0]?.id || null);
-    }
-    if (tasks.length === 0) {
-      setTasks(exampleTasks);
-      setSelectedTaskId(exampleTasks[0]?.id || null);
-    }
-    if (timerHistory.length === 0) {
-      setTimerHistory(exampleTimerSessions);
-    }
-  }, []);
+    if (!user) return;
+    // Only load data for the current user
+    setProjects(exampleProjects.filter(p => p.userId === user.id));
+    setTasks(exampleTasks.filter(t => t.userId === user.id));
+    setTimerHistory(exampleTimerSessions.filter(ts => ts.userId === user.id));
+    setSelectedProjectId(null);
+    setSelectedTaskId(null);
+  }, [user]);
 
-  const { user, logout, setUser } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showUserSettings, setShowUserSettings] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -777,7 +778,7 @@ const App: React.FC = () => {
     users = users.map((u: typeof user) => u && u.id === user.id ? { ...u, ...settingsForm, updatedAt: new Date() } : u);
     localStorage.setItem('users', JSON.stringify(users));
     // Update currentUser
-    const updatedUser = { ...user, ...settingsForm, updatedAt: new Date() };
+    const updatedUser = { ...user, ...settingsForm, theme: settingsForm.theme as 'dark' | 'light', updatedAt: new Date() };
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     setUser(updatedUser);
     setShowUserSettings(false);
@@ -787,6 +788,10 @@ const App: React.FC = () => {
     }
     // Optionally, reload to apply language (if you implement i18n later)
   };
+
+  // When rendering, filter by userId
+  const filteredProjects = projects.filter(p => user && p.userId === user.id);
+  const filteredTasks = tasks.filter(task => user && task.userId === user.id && task.projectId === selectedProjectId);
 
   // Routing setup
   return (
@@ -983,7 +988,7 @@ const App: React.FC = () => {
                       <div className="main-content-col">
                         <div className="section-card h-full">
         <Projects
-          projects={projects}
+          projects={filteredProjects}
           onCreateProject={createProject}
           onUpdateProject={updateProject}
           onDeleteProject={deleteProject}
@@ -998,7 +1003,7 @@ const App: React.FC = () => {
                       <div className="main-content-col">
                         <div className="section-card h-full">
             <Tasks
-              tasks={tasks.filter(task => task.projectId === selectedProjectId)}
+              tasks={filteredTasks}
               onCreateTask={createTask}
               onUpdateTask={updateTask}
               onDeleteTask={deleteTask}

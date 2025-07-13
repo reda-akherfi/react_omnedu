@@ -4,7 +4,8 @@ import { FaSearch } from 'react-icons/fa';
 // Type definitions
 interface Task {
   id: number;
-  projectId: number;
+  userId: number;
+  projectId: number | null;
   title: string;
   description: string;
   completed: boolean;
@@ -15,7 +16,7 @@ interface Task {
 
 interface TasksProps {
   tasks: Task[];
-  onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timerIds'>) => void;
+  onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timerIds' | 'userId'>) => void;
   onUpdateTask: (id: number, updates: Partial<Task>) => void;
   onDeleteTask: (id: number) => void;
   selectedTaskId: number | null;
