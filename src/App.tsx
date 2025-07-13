@@ -4,6 +4,7 @@ import './App.css'
 import Timer from './components/Timer/Timer'
 import Tasks from './components/Tasks/Tasks';
 import Projects from './components/Projects/Projects';
+import { exampleProjects, exampleTasks, exampleTimerSessions } from './assets/exampleData';
 
 // Type definitions
 interface Project {
@@ -580,6 +581,21 @@ const App: React.FC = () => {
 
 
   const selectedTask = getSelectedTask();
+
+  // Load example data on first mount if state is empty
+  useEffect(() => {
+    if (projects.length === 0) {
+      setProjects(exampleProjects);
+      setSelectedProjectId(exampleProjects[0]?.id || null);
+    }
+    if (tasks.length === 0) {
+      setTasks(exampleTasks);
+      setSelectedTaskId(exampleTasks[0]?.id || null);
+    }
+    if (timerHistory.length === 0) {
+      setTimerHistory(exampleTimerSessions);
+    }
+  }, []);
 
   return (
     <div className={`min-h-screen transition-colors duration-200 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
