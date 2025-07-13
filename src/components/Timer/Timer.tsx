@@ -172,31 +172,31 @@ const Timer: React.FC<TimerProps> = ({
     <div className={`w-full h-full flex flex-col ${darkMode ? 'dark' : ''}`}>
       {/* Task Info */}
       <div className="px-4 pt-4">
-        {selectedTaskId && (
+      {selectedTaskId && (
           <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 mt-4 ${
             darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'
           }`}>
             <h3 className={`text-sm font-medium mb-1 ${darkMode ? 'text-blue-200' : 'text-blue-800'}`}>Working on:</h3>
             <p className={`font-medium ${darkMode ? 'text-blue-100' : 'text-blue-700'}`}>{taskTitle || `Task #${selectedTaskId}`}</p>
             <div className={`text-xs mt-1 ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
-              Sessions: {getTaskSessionCount()} • Completed: {getTaskCompletedSessionCount()}
-            </div>
+            Sessions: {getTaskSessionCount()} • Completed: {getTaskCompletedSessionCount()}
           </div>
-        )}
-        {!selectedTaskId && (
+        </div>
+      )}
+      {!selectedTaskId && (
           <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 mt-4 ${
             darkMode ? 'bg-yellow-900 border-yellow-700' : 'bg-yellow-50 border-yellow-200'
           }`}>
             <p className={`text-sm ${darkMode ? 'text-yellow-200' : 'text-yellow-700'}`}>⚠️ No task selected. Timer sessions won't be linked to any task.</p>
-          </div>
-        )}
+        </div>
+      )}
       </div>
-
+      
       {/* Mode menu and settings gear */}
       <div className="px-4">
         {modeMenu}
-      </div>
-
+        </div>
+        
       {/* Timer display and controls */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-4">
         <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{getPhaseLabel()}</h2>
@@ -212,27 +212,27 @@ const Timer: React.FC<TimerProps> = ({
         {mode === 'pomodoro' && (
           <div className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Session {pomodoroCount + 1} • {pomodoroPhase === 'work' ? 'Focus' : 'Break'}</div>
         )}
-
+      
         {/* Timer controls */}
-        <div className="flex justify-center space-x-4 mb-6">
-          <button
+      <div className="flex justify-center space-x-4 mb-6">
+        <button
             onClick={isRunning ? onPauseTimer : onStartTimer}
             disabled={!selectedTaskId}
             className={`px-6 py-2 rounded-md font-medium transition-colors duration-200 ${
-              isRunning 
-                ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
-                : 'bg-green-500 hover:bg-green-600 text-white'
+            isRunning 
+              ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
+              : 'bg-green-500 hover:bg-green-600 text-white'
             } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            {isRunning ? 'Pause' : 'Start'}
-          </button>
-          <button
+        >
+          {isRunning ? 'Pause' : 'Start'}
+        </button>
+        <button
             onClick={onResetTimer}
             disabled={!selectedTaskId}
             className={`px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium transition-colors duration-200 ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Reset
-          </button>
+        >
+          Reset
+        </button>
           {mode === 'pomodoro' && (
             <button
               onClick={onSkipTimer}
@@ -243,8 +243,8 @@ const Timer: React.FC<TimerProps> = ({
               Skip
             </button>
           )}
-        </div>
-
+      </div>
+      
         {/* Countdown duration input */}
         {mode === 'countdown' && (
           <div className="w-full">
@@ -272,76 +272,76 @@ const Timer: React.FC<TimerProps> = ({
           >
             <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Timer Settings</h3>
             <div className="space-y-3">
-              <div>
+                <div>
                 <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Work Duration (minutes)</label>
-                <input
-                  type="number"
-                  value={settings.workDuration}
+                  <input
+                    type="number"
+                    value={settings.workDuration}
                   onChange={e => onUpdateSettings('workDuration', e.target.value)}
                   disabled={!selectedTaskId}
                   className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${darkMode ? 'bg-gray-600 border-gray-500 text-gray-100' : 'border-gray-300 text-gray-900'} ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  min="1"
-                  max="120"
-                />
-              </div>
-              <div>
+                    min="1"
+                    max="120"
+                  />
+                </div>
+                <div>
                 <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Short Break (minutes)</label>
-                <input
-                  type="number"
-                  value={settings.shortBreakDuration}
+                  <input
+                    type="number"
+                    value={settings.shortBreakDuration}
                   onChange={e => onUpdateSettings('shortBreakDuration', e.target.value)}
                   disabled={!selectedTaskId}
                   className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${darkMode ? 'bg-gray-600 border-gray-500 text-gray-100' : 'border-gray-300 text-gray-900'} ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  min="1"
-                  max="60"
-                />
-              </div>
-              <div>
+                    min="1"
+                    max="60"
+                  />
+                </div>
+                <div>
                 <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Long Break (minutes)</label>
-                <input
-                  type="number"
-                  value={settings.longBreakDuration}
+                  <input
+                    type="number"
+                    value={settings.longBreakDuration}
                   onChange={e => onUpdateSettings('longBreakDuration', e.target.value)}
                   disabled={!selectedTaskId}
                   className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${darkMode ? 'bg-gray-600 border-gray-500 text-gray-100' : 'border-gray-300 text-gray-900'} ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  min="1"
-                  max="120"
-                />
-              </div>
-              <div>
+                    min="1"
+                    max="120"
+                  />
+                </div>
+                <div>
                 <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Long Break Interval (sessions)</label>
-                <input
-                  type="number"
-                  value={settings.longBreakInterval}
+                  <input
+                    type="number"
+                    value={settings.longBreakInterval}
                   onChange={e => onUpdateSettings('longBreakInterval', e.target.value)}
                   disabled={!selectedTaskId}
                   className={`w-full p-1 border rounded text-sm transition-colors duration-200 ${darkMode ? 'bg-gray-600 border-gray-500 text-gray-100' : 'border-gray-300 text-gray-900'} ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  min="2"
-                  max="10"
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="autoStartWork"
-                  checked={settings.autoStartWork}
+                    min="2"
+                    max="10"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="autoStartWork"
+                    checked={settings.autoStartWork}
                   onChange={e => onUpdateSettings('autoStartWork', e.target.checked)}
                   disabled={!selectedTaskId}
                   className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                />
+                  />
                 <label htmlFor="autoStartWork" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Auto-start work sessions</label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="autoStartBreaks"
-                  checked={settings.autoStartBreaks}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="autoStartBreaks"
+                    checked={settings.autoStartBreaks}
                   onChange={e => onUpdateSettings('autoStartBreaks', e.target.checked)}
                   disabled={!selectedTaskId}
                   className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                />
+                  />
                 <label htmlFor="autoStartBreaks" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Auto-start break sessions</label>
-              </div>
+                </div>
               <div className="flex justify-end mt-4">
                 <button
                   onClick={() => setShowSettingsModal(false)}
@@ -352,8 +352,8 @@ const Timer: React.FC<TimerProps> = ({
               </div>
             </div>
           </div>
-        </div>
-      )}
+          </div>
+        )}
       
       {timerHistory.length > 0 && (
         <div className={`mt-6 p-4 rounded-md transition-colors duration-200 ${

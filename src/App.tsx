@@ -728,12 +728,17 @@ const App: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showUserSettings, setShowUserSettings] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const userButtonRef = useRef<HTMLButtonElement>(null);
 
   // Close user menu on click outside
   useEffect(() => {
     if (!showUserMenu) return;
     const handler = (e: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        userMenuRef.current && !userMenuRef.current.contains(target) &&
+        userButtonRef.current && !userButtonRef.current.contains(target)
+      ) {
         setShowUserMenu(false);
       }
     };
@@ -814,7 +819,8 @@ const App: React.FC = () => {
             {user && (
               <div className="relative">
                 <button
-                  onClick={() => setShowUserMenu(v => !v)}
+                  ref={userButtonRef}
+                  onClick={e => { e.stopPropagation(); setShowUserMenu(v => !v); }}
                   className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                   aria-label="User menu"
                 >
@@ -976,13 +982,13 @@ const App: React.FC = () => {
                       {/* Projects Component */}
                       <div className="main-content-col">
                         <div className="section-card h-full">
-                          <Projects
-                            projects={projects}
-                            onCreateProject={createProject}
-                            onUpdateProject={updateProject}
-                            onDeleteProject={deleteProject}
-                            selectedProjectId={selectedProjectId}
-                            onSelectProject={selectProject}
+        <Projects
+          projects={projects}
+          onCreateProject={createProject}
+          onUpdateProject={updateProject}
+          onDeleteProject={deleteProject}
+          selectedProjectId={selectedProjectId}
+          onSelectProject={selectProject}
                             darkMode={darkMode}
                           />
                         </div>
@@ -991,18 +997,18 @@ const App: React.FC = () => {
                       {/* Tasks Component */}
                       <div className="main-content-col">
                         <div className="section-card h-full">
-                          <Tasks
-                            tasks={tasks.filter(task => task.projectId === selectedProjectId)}
-                            onCreateTask={createTask}
-                            onUpdateTask={updateTask}
-                            onDeleteTask={deleteTask}
-                            selectedTaskId={selectedTaskId}
-                            onSelectTask={selectTask}
-                            currentProjectId={selectedProjectId}
+            <Tasks
+              tasks={tasks.filter(task => task.projectId === selectedProjectId)}
+              onCreateTask={createTask}
+              onUpdateTask={updateTask}
+              onDeleteTask={deleteTask}
+              selectedTaskId={selectedTaskId}
+              onSelectTask={selectTask}
+              currentProjectId={selectedProjectId}
                             darkMode={darkMode}
-                          />
-                        </div>
-                      </div>
+            />
+          </div>
+        </div>
 
                       {/* Timer Component */}
                       <div className="main-content-col">
@@ -1052,10 +1058,10 @@ const App: React.FC = () => {
                         </svg>
                         <h2 className={`text-2xl font-bold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Statistics</h2>
                         <p>Statistics section coming soon...</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              </div>
+            </div>
+          )}
+        </div>
               </>
             </RequireAuth>
           } />
