@@ -56,6 +56,16 @@ const App: React.FC = () => {
   // Dark mode state
   const [darkMode, setDarkMode] = useState<boolean>(true);
   
+  // Ensure .dark class is toggled on <html> for correct CSS variable inheritance
+  useEffect(() => {
+    const html = document.documentElement;
+    if (darkMode) {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+  }, [darkMode]);
+  
   // Sidebar navigation state
   const [activeSidebarItem, setActiveSidebarItem] = useState<'main' | 'statistics'>('main');
   

@@ -49,12 +49,13 @@
     --scrollbar-track: #f3f4f6;
   }
   
-  .dark .section-card,
-  [data-theme="dark"] .section-card {
+  .dark, [data-theme="dark"] {
     --section-bg: #181f2a;
     --section-border: #232b3a;
     --section-header-color: #f3f4f6;
     --section-shadow: 0 2px 16px 0 rgba(0,0,0,0.32);
+    --scrollbar-thumb: #374151;
+    --scrollbar-track: #181f2a;
     box-shadow: var(--section-shadow);
   }
   
@@ -90,14 +91,14 @@
 
   .themed-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-color: var(--scrollbar-thumb, #d1d5db) var(--scrollbar-track, #f3f4f6);
   }
   .themed-scrollbar::-webkit-scrollbar {
     width: 8px;
-    background: var(--scrollbar-track);
+    background: var(--scrollbar-track, #f3f4f6);
   }
   .themed-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
+    background: var(--scrollbar-thumb, #d1d5db);
     border-radius: 8px;
   }
   
