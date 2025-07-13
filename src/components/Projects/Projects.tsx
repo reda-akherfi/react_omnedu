@@ -137,7 +137,7 @@ const Projects: React.FC<ProjectsProps> = ({
   return (
     <div className={`w-full h-full flex flex-col ${darkMode ? 'dark' : ''}`}>
       <div className="flex flex-col h-full min-h-0">
-        <div className="flex items-center justify-between mb-4 px-4 pt-4">
+        <div className="flex items-center justify-between mb-4 px-4 pt-4 mt-4">
           <h2 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Projects</h2>
           <button
             onClick={() => {

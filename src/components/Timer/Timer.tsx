@@ -173,7 +173,7 @@ const Timer: React.FC<TimerProps> = ({
       {/* Task Info */}
       <div className="px-4 pt-4">
         {selectedTaskId && (
-          <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
+          <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 mt-4 ${
             darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'
           }`}>
             <h3 className={`text-sm font-medium mb-1 ${darkMode ? 'text-blue-200' : 'text-blue-800'}`}>Working on:</h3>
@@ -184,7 +184,7 @@ const Timer: React.FC<TimerProps> = ({
           </div>
         )}
         {!selectedTaskId && (
-          <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
+          <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 mt-4 ${
             darkMode ? 'bg-yellow-900 border-yellow-700' : 'bg-yellow-50 border-yellow-200'
           }`}>
             <p className={`text-sm ${darkMode ? 'text-yellow-200' : 'text-yellow-700'}`}>⚠️ No task selected. Timer sessions won't be linked to any task.</p>
