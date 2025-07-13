@@ -189,7 +189,7 @@ const Tasks: React.FC<TasksProps> = ({
   );
 
   return (
-    <div className={"w-full h-full flex flex-col"}>
+    <div className={`w-full h-full flex flex-col ${darkMode ? 'dark' : ''}`}>
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4 px-4 pt-4">
           <h2 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Tasks</h2>

@@ -169,7 +169,7 @@ const Timer: React.FC<TimerProps> = ({
   );
 
   return (
-    <div className={"w-full h-full flex flex-col"}>
+    <div className={`w-full h-full flex flex-col ${darkMode ? 'dark' : ''}`}>
       {/* Task Info */}
       <div className="px-4 pt-4">
         {selectedTaskId && (
@@ -197,7 +197,7 @@ const Timer: React.FC<TimerProps> = ({
         {modeMenu}
       </div>
 
-      {/* Timer display and controls ... unchanged ... */}
+      {/* Timer display and controls */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-4">
         <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{getPhaseLabel()}</h2>
         <div className={`text-6xl font-mono font-bold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>{getDisplayTime()}</div>
@@ -213,7 +213,7 @@ const Timer: React.FC<TimerProps> = ({
           <div className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Session {pomodoroCount + 1} • {pomodoroPhase === 'work' ? 'Focus' : 'Break'}</div>
         )}
 
-        {/* Timer controls ... unchanged ... */}
+        {/* Timer controls */}
         <div className="flex justify-center space-x-4 mb-6">
           <button
             onClick={isRunning ? onPauseTimer : onStartTimer}
@@ -245,7 +245,7 @@ const Timer: React.FC<TimerProps> = ({
           )}
         </div>
 
-        {/* Countdown duration input ... unchanged ... */}
+        {/* Countdown duration input */}
         {mode === 'countdown' && (
           <div className="w-full">
             <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Countdown Duration (minutes)</label>
@@ -369,7 +369,6 @@ const Timer: React.FC<TimerProps> = ({
           </div>
         </div>
       )}
-      
     </div>
   );
 };
