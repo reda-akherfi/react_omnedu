@@ -908,4 +908,42 @@ export const exampleTimerSessions: TimerSession[] = [
     endTime: new Date('2024-01-10T19:30:00'),
     actualDuration: 1800
   }
+];
+
+// User model for authentication
+export type User = {
+  id: number;
+  username: string;
+  email: string;
+  password: string; // hashed in real app, plain for local demo
+  photo: string; // URL or base64
+  theme: 'light' | 'dark';
+  language: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export const exampleUsers: User[] = [
+  {
+    id: 1,
+    username: 'demo',
+    email: 'demo@example.com',
+    password: 'password123',
+    photo: '',
+    theme: 'dark',
+    language: 'en',
+    createdAt: new Date('2024-01-01T08:00:00'),
+    updatedAt: new Date('2024-01-01T08:00:00'),
+  },
+  {
+    id: 2,
+    username: 'alice',
+    email: 'alice@example.com',
+    password: 'alicepass',
+    photo: '',
+    theme: 'light',
+    language: 'en',
+    createdAt: new Date('2024-01-02T08:00:00'),
+    updatedAt: new Date('2024-01-02T08:00:00'),
+  },
 ]; 
