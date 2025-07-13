@@ -673,13 +673,12 @@ const App: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-hidden full-available-height">
           {activeSidebarItem === 'main' && (
-            <div className="p-6">
-              {/* Main Content Row - Projects, Tasks, Timer */}
-              <div className="grid grid-cols-3 gap-6">
-                {/* Projects Component */}
-                <div>
+            <div className="main-content-row full-available-height">
+              {/* Projects Component */}
+              <div className="main-content-col">
+                <div className="section-card h-full">
                   <Projects
                     projects={projects}
                     onCreateProject={createProject}
@@ -690,9 +689,11 @@ const App: React.FC = () => {
                     darkMode={darkMode}
                   />
                 </div>
+              </div>
 
-                {/* Tasks Component */}
-                <div>
+              {/* Tasks Component */}
+              <div className="main-content-col">
+                <div className="section-card h-full">
                   <Tasks
                     tasks={tasks.filter(task => task.projectId === selectedProjectId)}
                     onCreateTask={createTask}
@@ -704,9 +705,11 @@ const App: React.FC = () => {
                     darkMode={darkMode}
                   />
                 </div>
+              </div>
 
-                {/* Timer Component */}
-                <div>
+              {/* Timer Component */}
+              <div className="main-content-col">
+                <div className="section-card h-full">
                   <Timer
                     selectedTaskId={selectedTaskId}
                     taskTitle={selectedTask?.title}

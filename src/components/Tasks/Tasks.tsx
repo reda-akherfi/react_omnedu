@@ -189,11 +189,9 @@ const Tasks: React.FC<TasksProps> = ({
   );
 
   return (
-    <div className={`max-w-md mx-auto p-6 rounded-lg shadow-lg transition-colors duration-200 ${
-      darkMode ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className={"w-full h-full flex flex-col"}>
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 px-4 pt-4">
           <h2 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Tasks</h2>
           <button
             onClick={() => {
@@ -212,7 +210,7 @@ const Tasks: React.FC<TasksProps> = ({
 
         {/* Search Box */}
         {currentProjectId && (
-          <div className="mb-4">
+          <div className="mb-4 px-4">
             <div className={`relative ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FaSearch className="h-4 w-4" />
@@ -340,7 +338,7 @@ const Tasks: React.FC<TasksProps> = ({
       </div>
 
       {/* Tasks List - Fixed height for 3 visible tasks */}
-      <div className="h-72 overflow-y-auto">
+      <div className="h-72 overflow-y-auto px-4 pb-4">
         <div className="space-y-3">
           {!currentProjectId ? (
             <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>

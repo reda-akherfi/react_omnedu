@@ -135,10 +135,8 @@ const Projects: React.FC<ProjectsProps> = ({
   );
 
   return (
-    <div className={`max-w-2xl mx-auto p-6 rounded-lg shadow-lg mb-8 transition-colors duration-200 ${
-      darkMode ? 'bg-gray-800' : 'bg-white'
-    }`}>
-      <div className="flex items-center justify-between mb-4">
+    <div className={"w-full h-full flex flex-col"}>
+      <div className="flex items-center justify-between mb-4 px-4 pt-4">
         <h2 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Projects</h2>
         <button
           onClick={() => {
@@ -153,7 +151,7 @@ const Projects: React.FC<ProjectsProps> = ({
       </div>
 
       {/* Search Box */}
-      <div className="mb-4">
+      <div className="mb-4 px-4">
         <div className={`relative ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <FaSearch className="h-4 w-4" />
@@ -253,7 +251,7 @@ const Projects: React.FC<ProjectsProps> = ({
       )}
 
       {/* Projects List - Fixed height for 3 visible projects */}
-      <div className="h-72 overflow-y-auto">
+      <div className="h-72 overflow-y-auto px-4 pb-4">
         <div className="space-y-3">
           {filteredProjects.length === 0 ? (
             <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>

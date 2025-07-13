@@ -169,34 +169,36 @@ const Timer: React.FC<TimerProps> = ({
   );
 
   return (
-    <div className={`max-w-md mx-auto p-6 rounded-lg shadow-lg transition-colors duration-200 ${
-      darkMode ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className={"w-full h-full flex flex-col"}>
       {/* Task Info */}
-      {selectedTaskId && (
-        <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
-          darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'
-        }`}>
-          <h3 className={`text-sm font-medium mb-1 ${darkMode ? 'text-blue-200' : 'text-blue-800'}`}>Working on:</h3>
-          <p className={`font-medium ${darkMode ? 'text-blue-100' : 'text-blue-700'}`}>{taskTitle || `Task #${selectedTaskId}`}</p>
-          <div className={`text-xs mt-1 ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
-            Sessions: {getTaskSessionCount()} • Completed: {getTaskCompletedSessionCount()}
+      <div className="px-4 pt-4">
+        {selectedTaskId && (
+          <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
+            darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'
+          }`}>
+            <h3 className={`text-sm font-medium mb-1 ${darkMode ? 'text-blue-200' : 'text-blue-800'}`}>Working on:</h3>
+            <p className={`font-medium ${darkMode ? 'text-blue-100' : 'text-blue-700'}`}>{taskTitle || `Task #${selectedTaskId}`}</p>
+            <div className={`text-xs mt-1 ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+              Sessions: {getTaskSessionCount()} • Completed: {getTaskCompletedSessionCount()}
+            </div>
           </div>
-        </div>
-      )}
-      {!selectedTaskId && (
-        <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
-          darkMode ? 'bg-yellow-900 border-yellow-700' : 'bg-yellow-50 border-yellow-200'
-        }`}>
-          <p className={`text-sm ${darkMode ? 'text-yellow-200' : 'text-yellow-700'}`}>⚠️ No task selected. Timer sessions won't be linked to any task.</p>
-        </div>
-      )}
+        )}
+        {!selectedTaskId && (
+          <div className={`mb-4 p-3 rounded-md border transition-colors duration-200 ${
+            darkMode ? 'bg-yellow-900 border-yellow-700' : 'bg-yellow-50 border-yellow-200'
+          }`}>
+            <p className={`text-sm ${darkMode ? 'text-yellow-200' : 'text-yellow-700'}`}>⚠️ No task selected. Timer sessions won't be linked to any task.</p>
+          </div>
+        )}
+      </div>
 
       {/* Mode menu and settings gear */}
-      {modeMenu}
+      <div className="px-4">
+        {modeMenu}
+      </div>
 
       {/* Timer display and controls ... unchanged ... */}
-      <div className="text-center mb-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-4">
         <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{getPhaseLabel()}</h2>
         <div className={`text-6xl font-mono font-bold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>{getDisplayTime()}</div>
         {mode !== 'stopwatch' && (
@@ -210,44 +212,42 @@ const Timer: React.FC<TimerProps> = ({
         {mode === 'pomodoro' && (
           <div className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Session {pomodoroCount + 1} • {pomodoroPhase === 'work' ? 'Focus' : 'Break'}</div>
         )}
-      </div>
 
-      {/* Timer controls ... unchanged ... */}
-      <div className="flex justify-center space-x-4 mb-6">
-        <button
-          onClick={isRunning ? onPauseTimer : onStartTimer}
-          disabled={!selectedTaskId}
-          className={`px-6 py-2 rounded-md font-medium transition-colors duration-200 ${
-            isRunning 
-              ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
-              : 'bg-green-500 hover:bg-green-600 text-white'
-          } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {isRunning ? 'Pause' : 'Start'}
-        </button>
-        <button
-          onClick={onResetTimer}
-          disabled={!selectedTaskId}
-          className={`px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium transition-colors duration-200 ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          Reset
-        </button>
-        {mode === 'pomodoro' && (
+        {/* Timer controls ... unchanged ... */}
+        <div className="flex justify-center space-x-4 mb-6">
           <button
-            onClick={onSkipTimer}
+            onClick={isRunning ? onPauseTimer : onStartTimer}
             disabled={!selectedTaskId}
-            className={`px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-md font-medium transition-colors duration-200 ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
-            title="Skip to next phase"
+            className={`px-6 py-2 rounded-md font-medium transition-colors duration-200 ${
+              isRunning 
+                ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            } ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            Skip
+            {isRunning ? 'Pause' : 'Start'}
           </button>
-        )}
-      </div>
+          <button
+            onClick={onResetTimer}
+            disabled={!selectedTaskId}
+            className={`px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium transition-colors duration-200 ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Reset
+          </button>
+          {mode === 'pomodoro' && (
+            <button
+              onClick={onSkipTimer}
+              disabled={!selectedTaskId}
+              className={`px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-md font-medium transition-colors duration-200 ${!selectedTaskId ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title="Skip to next phase"
+            >
+              Skip
+            </button>
+          )}
+        </div>
 
-      {/* Countdown duration input ... unchanged ... */}
-      <div className="space-y-4">
+        {/* Countdown duration input ... unchanged ... */}
         {mode === 'countdown' && (
-          <div>
+          <div className="w-full">
             <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Countdown Duration (minutes)</label>
             <input
               type="number"

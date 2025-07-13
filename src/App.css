@@ -1,0 +1,99 @@
+/* Layout for 3 equal columns and rows, excluding sidebar and header */
+.main-content-row {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  background: inherit;
+}
+
+.main-content-col {
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 100%;
+  padding: 0;
+  background: inherit;
+}
+
+/* Ensure the content fills the available height minus header */
+.full-available-height {
+  height: calc(100vh - 4rem); /* 4rem = header height (pt-16) */
+  min-height: 0;
+}
+
+/* Card style for each section */
+.section-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  margin: 0 0.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+  background: var(--section-bg);
+  border: 1px solid var(--section-border);
+  transition: background 0.2s, border 0.2s;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+:root {
+  --section-bg: #fff;
+  --section-border: #e5e7eb;
+  --section-header-color: #1f2937;
+  --section-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+}
+
+.dark .section-card,
+[data-theme="dark"] .section-card {
+  --section-bg: #181f2a;
+  --section-border: #232b3a;
+  --section-header-color: #f3f4f6;
+  --section-shadow: 0 2px 16px 0 rgba(0,0,0,0.32);
+  box-shadow: var(--section-shadow);
+}
+
+.section-card .section-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 1rem 1.5rem 0.5rem 1.5rem;
+  color: var(--section-header-color);
+}
+
+/* Remove extra padding from inner components */
+.section-card > * {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Scrollbar styling for dark mode */
+.section-card, .main-content-row, .main-content-col {
+  scrollbar-width: thin;
+  scrollbar-color: #374151 #181f2a;
+}
+
+.section-card::-webkit-scrollbar, .main-content-row::-webkit-scrollbar, .main-content-col::-webkit-scrollbar {
+  width: 8px;
+  background: #181f2a;
+}
+.section-card::-webkit-scrollbar-thumb, .main-content-row::-webkit-scrollbar-thumb, .main-content-col::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 8px;
+}
+
+/* Responsive: keep 3 columns on all sizes, scroll if needed */
+@media (max-width: 900px) {
+  .main-content-row {
+    flex-direction: column;
+  }
+  .main-content-col {
+    min-width: 100%;
+    min-height: 33.333%;
+    max-height: 33.333%;
+  }
+}
