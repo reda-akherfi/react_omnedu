@@ -190,136 +190,62 @@ const Tasks: React.FC<TasksProps> = ({
 
   return (
     <div className={`w-full h-full flex flex-col ${darkMode ? 'dark' : ''}`}>
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4 px-4 pt-4">
-          <h2 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Tasks</h2>
-          <button
-            onClick={() => {
-              setShowCreateForm(!showCreateForm);
-              setEditingTaskId(null);
-              setFormData({ title: '', description: '', completed: false });
-            }}
-            disabled={!currentProjectId}
-            className={`px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors duration-200 ${
-              !currentProjectId ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {showCreateForm ? 'Cancel' : 'New Task'}
-          </button>
-        </div>
-
-        {/* Search Box */}
-        {currentProjectId && (
-          <div className="mb-4 px-4">
-            <div className={`relative ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaSearch className="h-4 w-4" />
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
-                  darkMode 
-                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                    : 'border-gray-300 text-gray-900 placeholder-gray-500'
-                }`}
-                placeholder="Search tasks..."
-              />
-            </div>
-            {searchQuery && (
-              <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Found {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''}
-              </div>
-            )}
+      <div className="flex flex-col h-full min-h-0">
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4 px-4 pt-4">
+            <h2 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Tasks</h2>
+            <button
+              onClick={() => {
+                setShowCreateForm(!showCreateForm);
+                setEditingTaskId(null);
+                setFormData({ title: '', description: '', completed: false });
+              }}
+              disabled={!currentProjectId}
+              className={`px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors duration-200 ${
+                !currentProjectId ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {showCreateForm ? 'Cancel' : 'New Task'}
+            </button>
           </div>
-        )}
 
-        {/* Create/Edit Modal */}
-        {(showCreateForm || editingTaskId) && (
-          !currentProjectId ? (
-            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
-              <div 
-                ref={noProjectModalRef}
-                className="bg-yellow-100 border border-yellow-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full text-yellow-800 text-sm cursor-default"
-              >
-                You must select a project to create a task.
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={() => {
-                      setShowCreateForm(false);
-                      cancelEditing();
-                    }}
-                    className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
-                  >
-                    Close
-                  </button>
+          {/* Search Box */}
+          {currentProjectId && (
+            <div className="mb-4 px-4">
+              <div className={`relative ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaSearch className="h-4 w-4" />
                 </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                      : 'border-gray-300 text-gray-900 placeholder-gray-500'
+                  }`}
+                  placeholder="Search tasks..."
+                />
               </div>
+              {searchQuery && (
+                <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Found {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
-              <div 
-                ref={createEditModalRef}
-                className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 w-full transition-colors duration-200 cursor-default ${
-                  darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-                }`}
-              >
-                <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                  {editingTaskId ? 'Edit Task' : 'New Task'}
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
-                        darkMode 
-                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'border-gray-300 text-gray-900 placeholder-gray-500'
-                      }`}
-                      placeholder="Enter task title"
-                    />
-                  </div>
-                  <div>
-                    <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Description
-                    </label>
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
-                        darkMode 
-                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'border-gray-300 text-gray-900 placeholder-gray-500'
-                      }`}
-                      rows={3}
-                      placeholder="Enter task description"
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="completed"
-                      checked={formData.completed}
-                      onChange={(e) => setFormData({ ...formData, completed: e.target.checked })}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label htmlFor="completed" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Mark as completed
-                    </label>
-                  </div>
-                  <div className="flex space-x-2 mt-4">
-                    <button
-                      onClick={() => editingTaskId ? handleUpdateTask(editingTaskId) : handleCreateTask()}
-                      className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium"
-                    >
-                      {editingTaskId ? 'Update' : 'Create'}
-                    </button>
+          )}
+
+          {/* Create/Edit Modal */}
+          {(showCreateForm || editingTaskId) && (
+            !currentProjectId ? (
+              <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
+                <div 
+                  ref={noProjectModalRef}
+                  className="bg-yellow-100 border border-yellow-300 shadow-lg rounded-lg p-6 max-w-md mx-4 w-full text-yellow-800 text-sm cursor-default"
+                >
+                  You must select a project to create a task.
+                  <div className="flex justify-end mt-4">
                     <button
                       onClick={() => {
                         setShowCreateForm(false);
@@ -327,128 +253,204 @@ const Tasks: React.FC<TasksProps> = ({
                       }}
                       className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
                     >
-                      Cancel
+                      Close
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
-          )
-        )}
-      </div>
-
-      {/* Tasks List - Fixed height for 3 visible tasks */}
-      <div className="h-72 overflow-y-auto px-4 pb-4">
-        <div className="space-y-3">
-          {!currentProjectId ? (
-            <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              <p className="font-medium">No Project Selected</p>
-              <p className="text-sm">Please select a project first to view and manage tasks</p>
-            </div>
-          ) : filteredTasks.length === 0 ? (
-            <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {searchQuery ? (
-                <>
-                  <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                  </svg>
-                  <p className="font-medium">No tasks found</p>
-                  <p className="text-sm">Try adjusting your search terms</p>
-                </>
-              ) : (
-                <>
-                  <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                  <p className="font-medium">No tasks yet</p>
-                  <p className="text-sm">Create your first task for this project!</p>
-                </>
-              )}
-            </div>
-          ) : (
-            filteredTasks.map(task => (
-              <div
-                key={task.id}
-                className={`p-4 border rounded-md cursor-pointer transition-colors duration-200 ${
-                  selectedTaskId === task.id
-                    ? darkMode 
-                      ? 'border-blue-400 bg-blue-900' 
-                      : 'border-blue-500 bg-blue-50'
-                    : task.completed
-                    ? darkMode
-                      ? 'border-green-600 bg-green-900'
-                      : 'border-green-300 bg-green-50'
-                    : darkMode
-                      ? 'border-gray-600 bg-gray-700 hover:bg-gray-600'
-                      : 'border-gray-300 bg-white hover:bg-gray-50'
-                }`}
-                onClick={() => onSelectTask(task.id)}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
+            ) : (
+              <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer">
+                <div 
+                  ref={createEditModalRef}
+                  className={`border shadow-lg rounded-lg p-6 max-w-md mx-4 w-full transition-colors duration-200 cursor-default ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+                  }`}
+                >
+                  <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                    {editingTaskId ? 'Edit Task' : 'New Task'}
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+                          darkMode 
+                            ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                            : 'border-gray-300 text-gray-900 placeholder-gray-500'
+                        }`}
+                        placeholder="Enter task title"
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Description
+                      </label>
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+                          darkMode 
+                            ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                            : 'border-gray-300 text-gray-900 placeholder-gray-500'
+                        }`}
+                        rows={3}
+                        placeholder="Enter task description"
+                      />
+                    </div>
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
-                        checked={task.completed}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          toggleTaskCompletion(task.id);
-                        }}
-                        className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
+                        id="completed"
+                        checked={formData.completed}
+                        onChange={(e) => setFormData({ ...formData, completed: e.target.checked })}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                       />
-                      <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
-                        {task.title}
-                      </h3>
+                      <label htmlFor="completed" className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Mark as completed
+                      </label>
                     </div>
-                    
-                    {task.description && (
-                      <p className={`text-sm mt-1 ${task.completed ? 'text-gray-400' : darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {task.description}
-                      </p>
-                    )}
-                    
-                    <div className={`flex items-center space-x-4 mt-2 text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      <span>Timers: {getTimerCount(task.id)}</span>
-                      <span>Created: {task.createdAt.toLocaleDateString()}</span>
-                      {selectedTaskId === task.id && (
-                        <span className={`font-medium ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Active</span>
-                      )}
+                    <div className="flex space-x-2 mt-4">
+                      <button
+                        onClick={() => editingTaskId ? handleUpdateTask(editingTaskId) : handleCreateTask()}
+                        className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium"
+                      >
+                        {editingTaskId ? 'Update' : 'Create'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowCreateForm(false);
+                          cancelEditing();
+                        }}
+                        className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm font-medium"
+                      >
+                        Cancel
+                      </button>
                     </div>
-                  </div>
-                  
-                  <div className="flex space-x-2 ml-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(task);
-                      }}
-                      className="p-2 text-yellow-500 hover:bg-yellow-100 hover:text-yellow-600 rounded transition-colors duration-200"
-                      title="Edit task"
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteClick(task);
-                      }}
-                      className="p-2 text-red-500 hover:bg-red-100 hover:text-red-600 rounded transition-colors duration-200"
-                      title="Delete task"
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </button>
                   </div>
                 </div>
               </div>
-            ))
+            )
           )}
+        </div>
+
+        {/* Tasks List - Fill available space, themed scrollbar */}
+        <div className="flex-1 min-h-0 overflow-y-auto themed-scrollbar px-4 pb-4">
+          <div className="space-y-3">
+            {!currentProjectId ? (
+              <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="font-medium">No Project Selected</p>
+                <p className="text-sm">Please select a project first to view and manage tasks</p>
+              </div>
+            ) : filteredTasks.length === 0 ? (
+              <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {searchQuery ? (
+                  <>
+                    <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                    </svg>
+                    <p className="font-medium">No tasks found</p>
+                    <p className="text-sm">Try adjusting your search terms</p>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <p className="font-medium">No tasks yet</p>
+                    <p className="text-sm">Create your first task for this project!</p>
+                  </>
+                )}
+              </div>
+            ) : (
+              filteredTasks.map(task => (
+                <div
+                  key={task.id}
+                  className={`p-4 border rounded-md cursor-pointer transition-colors duration-200 ${
+                    selectedTaskId === task.id
+                      ? darkMode 
+                        ? 'border-blue-400 bg-blue-900' 
+                        : 'border-blue-500 bg-blue-50'
+                      : task.completed
+                      ? darkMode
+                        ? 'border-green-600 bg-green-900'
+                        : 'border-green-300 bg-green-50'
+                      : darkMode
+                        ? 'border-gray-600 bg-gray-700 hover:bg-gray-600'
+                        : 'border-gray-300 bg-white hover:bg-gray-50'
+                  }`}
+                  onClick={() => onSelectTask(task.id)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={task.completed}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            toggleTaskCompletion(task.id);
+                          }}
+                          className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                          {task.title}
+                        </h3>
+                      </div>
+                      
+                      {task.description && (
+                        <p className={`text-sm mt-1 ${task.completed ? 'text-gray-400' : darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          {task.description}
+                        </p>
+                      )}
+                      
+                      <div className={`flex items-center space-x-4 mt-2 text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <span>Timers: {getTimerCount(task.id)}</span>
+                        <span>Created: {task.createdAt.toLocaleDateString()}</span>
+                        {selectedTaskId === task.id && (
+                          <span className={`font-medium ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Active</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-2 ml-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditing(task);
+                        }}
+                        className="p-2 text-yellow-500 hover:bg-yellow-100 hover:text-yellow-600 rounded transition-colors duration-200"
+                        title="Edit task"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(task);
+                        }}
+                        className="p-2 text-red-500 hover:bg-red-100 hover:text-red-600 rounded transition-colors duration-200"
+                        title="Delete task"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
       

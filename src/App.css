@@ -45,6 +45,8 @@
     --section-border: #e5e7eb;
     --section-header-color: #1f2937;
     --section-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+    --scrollbar-thumb: #d1d5db;
+    --scrollbar-track: #f3f4f6;
   }
   
   .dark .section-card,
@@ -83,6 +85,19 @@
   }
   .section-card::-webkit-scrollbar-thumb, .main-content-row::-webkit-scrollbar-thumb, .main-content-col::-webkit-scrollbar-thumb {
     background: #374151;
+    border-radius: 8px;
+  }
+
+  .themed-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+  .themed-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    background: var(--scrollbar-track);
+  }
+  .themed-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
     border-radius: 8px;
   }
   
